@@ -2,7 +2,7 @@
 <html lang="{{ str_replace('_', '-', app()->getLocale())}}">
 
     @php
-        $company = \App\Models\CompanyDetails::first();
+        $company = \App\Models\CompanyDetails::select('fav_icon', 'company_name')->first();
     @endphp  
 
 <head>
@@ -10,8 +10,8 @@
     <title>@yield('title', $company->company_name)</title>
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <meta content="width=device-width, initial-scale=1.0" name="viewport">
-    <meta content="Free HTML Templates" name="keywords">
-    <meta content="Free HTML Templates" name="description">
+    <meta content="" name="keywords">
+    <meta content="" name="description">
 
     <!-- Favicon -->
     <link rel="icon" href="{{ asset('images/company/' . $company->fav_icon) }}">
@@ -21,7 +21,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">  
 
     <!-- Font Awesome -->
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{{ asset('assets/admin/plugins/fontawesome-free/css/all.min.css')}}">
 
     <!-- Libraries Stylesheet -->
     <link rel="stylesheet" href="{{ asset('assets/frontend/lib/animate/animate.min.css') }}" rel="stylesheet">
@@ -30,7 +30,7 @@
     <!-- Customized Stylesheet -->
     <link rel="stylesheet" href="{{ asset('assets/frontend/css/style.css') }}" rel="stylesheet">
     <link rel="stylesheet" href="{{ asset('assets/frontend/css/custom.css') }}" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.min.css">
+    <link rel="stylesheet" href="{{ asset('assets/frontend/lib/jquery/jquery.dataTables.min.css')}}" rel="stylesheet">
 </head>
 
 <body>
@@ -55,7 +55,7 @@
 
 
     <!-- Back to Top -->
-    <a href="#" class="btn btn-primary back-to-top"><i class="fa fa-angle-double-up"></i></a>
+    <a class="btn btn-primary back-to-top"><i class="fa fa-angle-double-up"></i></a>
 
 
     <!-- JavaScript Libraries -->
@@ -64,7 +64,8 @@
     <script src="{{ asset('assets/frontend/lib/easing/easing.min.js')}}"></script>
     <script src="{{ asset('assets/frontend/lib/owlcarousel/owl.carousel.min.js')}}"></script>
     <script src="{{ asset('assets/frontend/lib/sweet-alert/sweetalert.min.js')}}"></script>
-    <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
+    <script src="{{ asset('assets/frontend/lib/jquery/jquery.dataTables.min.js')}}"></script>
+    <script src="{{ asset('assets/frontend/lib/moment/moment.min.js')}}"></script>
 
 
     <!-- Main Javascript -->

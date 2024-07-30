@@ -33,8 +33,11 @@ Route::fallback(function () {
 // Frontend
 Route::get('/', [FrontendController::class, 'index'])->name('frontend.homepage');
 Route::get('/category/{slug}', [FrontendController::class, 'showCategoryProducts'])->name('category.show');
+Route::get('/sub-category/{slug}', [FrontendController::class, 'showSubCategoryProducts'])->name('subcategory.show');
 Route::get('/product/{slug}', [FrontendController::class, 'showProduct'])->name('product.show');
 Route::get('/product/{slug}/{offerId?}', [FrontendController::class, 'showProduct'])->name('product.show');
+
+Route::get('/category-products', [FrontendController::class, 'getCategoryProducts'])->name('getCategoryProducts');
 
 //Check Coupon
 Route::get('/check-coupon', [FrontendController::class, 'checkCoupon']);
@@ -57,14 +60,18 @@ Route::get('/wishlist', [FrontendController::class, 'showWishlist'])->name('wish
 // Search products
 Route::get('/search/products', [FrontendController::class, 'search'])->name('search.products');
 
-// Cart products
-Route::post('/cart', [FrontendController::class, 'showCart'])->name('cart.index');
+// Cart list
+Route::get('/cart', [FrontendController::class, 'showCart'])->name('cart.index');
 
 Route::post('/checkout', [FrontendController::class, 'storeCart'])->name('checkout.store');
 
 Route::post('/place-order', [OrderController::class, 'placeOrder'])->name('place.order');
 
 Route::get('/order/{encoded_order_id}', [OrderController::class, 'generatePDF'])->name('generate-pdf');
+
+// Shop
+
+Route::post('/products/filter', [FrontendController::class, 'filter']);
 
 Route::group(['prefix' =>'user/', 'middleware' => ['auth', 'is_user']], function(){
   
@@ -76,6 +83,13 @@ Route::group(['prefix' =>'user/', 'middleware' => ['auth', 'is_user']], function
 
     Route::get('/orders', [OrderController::class, 'getOrders'])->name('orders.index');
 
+    Route::get('/orders/{orderId}/details', [OrderController::class, 'showOrderUser'])->name('orders.details');
+
+    Route::post('{orderId}/cancel', [OrderController::class, 'cancel'])->name('orders.cancel');
+
+    Route::get('/orders/details', [OrderController::class, 'getOrderDetailsModal'])->name('orders.details.modal');
+
+    Route::post('/order-return', [OrderController::class, 'returnStore'])->name('orders.return');
 });
   
 

@@ -7,14 +7,9 @@
         <div class="col-lg-5 mb-30">
             <div id="product-carousel" class="carousel slide" data-ride="carousel">
                 <div class="carousel-inner bg-light">
-
-                @php
-                    $currency = \App\Models\CompanyDetails::value('currency');
-                @endphp
-
                     @foreach($product->images as $index => $image)
                         <div class="carousel-item {{ $index === 0 ? 'active' : '' }}">
-                            <img class="d-block w-100" src="{{ asset('/images/products/' . $image->image) }}" alt="Image" style="height: 400px; object-fit: cover;">
+                            <x-image-with-loader class="d-block w-100" src="{{ asset('/images/products/' . $image->image) }}" alt="Image" style="height: 400px; object-fit: cover;"/>
                         </div>
                     @endforeach
                 </div>
@@ -36,24 +31,22 @@
                 </div>
                 @if(isset($offerPrice) && $offerPrice !== null)
                     <h3 class="font-weight-semi-bold mb-4">
-                        <del>{{ $currency }} {{ $regularPrice }}</del>
+                        <del>{{ $currency }} {{ $oldOfferPrice }}</del>
                         {{ $currency }} {{ $offerPrice }}
                         @php
-                            $discountPercentage = (($regularPrice - $offerPrice) / $regularPrice) * 100;
+                            $discountPercentage = (($oldOfferPrice - $offerPrice) / $oldOfferPrice) * 100;
                         @endphp
                         <small>({{ round($discountPercentage, 0) }}% off)</small>
                     </h3>
                 @elseif(isset($flashSellPrice) && $flashSellPrice !== null)
                     <h3 class="font-weight-semi-bold mb-4">
-                @if($regularPrice !== $flashSellPrice)
-                <del>{{ $currency }} {{ $regularPrice }}</del>
-                    @endif
-                    {{ $currency }} {{ $flashSellPrice }}
-                    @php
-                        $discountPercentage = (($regularPrice - $flashSellPrice) / $regularPrice) * 100;
-                    @endphp
-                    <small>({{ round($discountPercentage, 0) }}% off)</small>
-                </h3>
+                        <del>{{ $currency }} {{ $OldFlashSellPrice }}</del>
+                        {{ $currency }} {{ $flashSellPrice }}
+                        @php
+                            $discountPercentage = (($OldFlashSellPrice - $flashSellPrice) / $OldFlashSellPrice) * 100;
+                        @endphp
+                        <small>({{ round($discountPercentage, 0) }}% off)</small>
+                    </h3>
                 @else
                     <h3 class="font-weight-semi-bold mb-4">
                         {{ $currency }} {{ $regularPrice }}
@@ -111,6 +104,13 @@
                         </div>
                     </form>
                 </div>
+
+                @if(!$product->stock || $product->stock->quantity <= 0)
+                    <div class="text-danger mt-2 mb-2">
+                        This product is currently out of stock.
+                    </div>
+                @endif
+
                 <div class="d-flex align-items-center mb-4 pt-2">
                     <div class="input-group quantity mr-3" style="width: 130px;">
                     <div class="input-group-btn">
@@ -130,11 +130,15 @@
                     <button class="btn btn-primary px-3 add-to-cart"
                             data-product-id="{{ $product->id }}"
                             data-price="{{ isset($offerPrice) ? $offerPrice : (isset($flashSellPrice) ? $flashSellPrice : $regularPrice) }}" 
-                            data-offer-id="{{ isset($offerId) ? $offerId : '0' }}">
+                            data-offer-id="{{ isset($offerId) ? $offerId : '0' }}" 
+                            @if($product->stock && $product->stock->quantity > 0)
+                            @else
+                                disabled
+                            @endif>
                         <i class="fa fa-shopping-cart mr-1"></i> Add To Cart
                     </button>
                 </div>
-                <div class="d-flex pt-2">
+                {{-- <div class="d-flex pt-2">
                     <strong class="text-dark mr-2">Share on:</strong>
                     <div class="d-inline-flex">
                         <a class="text-dark px-2" href="#">
@@ -150,7 +154,7 @@
                             <i class="fab fa-pinterest"></i>
                         </a>
                     </div>
-                </div>
+                </div> --}}
             </div>
         </div>
 
@@ -169,11 +173,11 @@
                         <p>{!! $product->description !!}</p>
                     </div>
                     <div class="tab-pane fade" id="tab-pane-2">
-                        <div class="row">
+                        {{-- <div class="row">
                             <div class="col-md-6">
                                 <h4 class="mb-4">1 review for {{ $product->name }}</h4>
                                 <div class="media mb-4">
-                                    <img src="{{ asset('assets/frontend/img/user.jpg') }}" alt="Image" class="img-fluid mr-3 mt-1" style="width: 45px;">
+                                    <x-image-with-loader src="{{ asset('assets/frontend/img/user.jpg') }}" alt="Image" class="img-fluid mr-3 mt-1" style="width: 45px;"/>
                                     <div class="media-body">
                                         <h6>John Doe<small> - <i>01 Jan 2045</i></small></h6>
                                         <div class="text-primary mb-2">
@@ -217,7 +221,7 @@
                                         <input type="submit" value="Leave Your Review" class="btn btn-primary px-3">
                                     </div>
                                 </form>
-                            </div>
+                            </div> --}}
                         </div>
                     </div>
                 </div>
@@ -233,37 +237,42 @@
         <div class="col">
             <div class="owl-carousel related-carousel">
                 @foreach($relatedProducts as $relatedProduct)
-                <div class="product-item bg-light">
-                    <div class="product-img position-relative overflow-hidden" style="height: 250px;">
-                        <img class="img-fluid w-100" src="{{ asset('/images/products/' . $relatedProduct->feature_image) }}" alt="{{ $relatedProduct->name }}">
-                        
-                        <div class="product-action">
-
-                            <a class="btn btn-outline-dark btn-square add-to-cart" data-product-id="{{ $relatedProduct->id }}">
-                                <i class="fa fa-shopping-cart"></i>
-                            </a>
-
-                            <a class="btn btn-outline-dark btn-square add-to-wishlist" data-product-id="{{ $relatedProduct->id }}">
-                                <i class="far fa-heart"></i>
-                            </a>
+                    <div class="product-item bg-light">
+                        <div class="product-img position-relative overflow-hidden" style="height: 250px;">
+                            <x-image-with-loader class="img-fluid w-100" src="{{ asset('/images/products/' . $relatedProduct->feature_image) }}" alt="{{ $relatedProduct->name }}"/>
                             
+                            <div class="product-action">
+                               @if ($relatedProduct->stock && $relatedProduct->stock->quantity > 0)
+                                    <a class="btn btn-outline-dark btn-square add-to-cart" data-product-id="{{ $relatedProduct->id }}" data-offer-id="0" data-price="{{ $relatedProduct->price }}">
+                                        <i class="fa fa-shopping-cart"></i>
+                                    </a>
+                                @else
+                                    <a class="btn btn-outline-dark btn-square disabled" aria-disabled="true">
+                                        <i class="fa fa-shopping-cart"></i>
+                                    </a>
+                                @endif
+                                <a class="btn btn-outline-dark btn-square add-to-wishlist" 
+                                data-product-id="{{ $relatedProduct->id }}" 
+                                data-offer-id="0" 
+                                data-price="{{ $relatedProduct->price }}">
+                                    <i class="fa fa-heart"></i>
+                                </a>
+                            </div>
+                        </div>
+                        <div class="text-center py-4">
+                            <a class="h6 text-decoration-none text-truncate" href="{{ route('product.show', $relatedProduct->slug) }}">{{ $relatedProduct->name }}</a>
+                            <div class="d-flex align-items-center justify-content-center mt-2">
+                                <h5>{{$currency}} {{ $relatedProduct->price }}</h5>
+                            </div>
+                            <div class="d-flex align-items-center justify-content-center mb-1">
+                                @if($relatedProduct->stock && $relatedProduct->stock->quantity > 0)
+                                    <p>Available: {{ $relatedProduct->stock->quantity }}</p>
+                                @else
+                                    <p>Out of Stock</p>
+                                @endif
+                            </div>
                         </div>
                     </div>
-                    <div class="text-center py-4">
-                        <a class="h6 text-decoration-none text-truncate" href="{{ route('product.show', $relatedProduct->slug) }}">{{ $relatedProduct->name }}</a>
-                        <div class="d-flex align-items-center justify-content-center mt-2">
-                            <h5>{{$currency}} {{ $relatedProduct->price }}</h5>
-                        </div>
-                        <div class="d-flex align-items-center justify-content-center mb-1">
-                            {{-- <small class="fa fa-star text-primary mr-1"></small>
-                            <small class="fa fa-star text-primary mr-1"></small>
-                            <small class="fa fa-star text-primary mr-1"></small>
-                            <small class="fa fa-star text-primary mr-1"></small>
-                            <small class="fa fa-star-half-alt text-primary mr-1"></small>
-                            <small>(99)</small> --}}
-                        </div>
-                    </div>
-                </div>
                 @endforeach
             </div>
         </div>

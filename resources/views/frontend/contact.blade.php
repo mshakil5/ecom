@@ -2,10 +2,6 @@
 
 @section('content')
 
-@php
-    $companyDetails = \App\Models\CompanyDetails::first();
-@endphp
-
 <div class="container-fluid">
     <h2 class="section-title position-relative text-uppercase mx-xl-5 mb-4"><span class="bg-secondary pr-3">Contact Us</span></h2>
     <div class="row px-xl-5">
@@ -28,7 +24,7 @@
                         </div>
                     @endif
                 </div>
-                <form name="sentMessage" id="contactForm" novalidate="novalidate" action="{{ route('contact.store') }}" method="POST">
+                <form name="sentMessage" id="contactForm" action="{{ route('contact.store') }}" method="POST">
                     @csrf
                     <div class="control-group">
                         <input type="text" class="form-control" id="name" name="name" placeholder="Your Name"

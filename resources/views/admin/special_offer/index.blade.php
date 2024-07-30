@@ -35,6 +35,9 @@
                                         <a href="{{ route('special-offer.edit', $specialOffer->id) }}" class="btn btn-sm btn-primary">
                                             <i class="fas fa-edit"></i>
                                         </a>
+                                        <button class="btn btn-sm btn-danger delete-special-offer-btn" data-special-sell-id="{{ $specialOffer->id }}">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
                                     </td>
                                 </tr>
                                 @endforeach
@@ -155,6 +158,34 @@
 
         $('#closeModalBtn').click(function() {
             $('#viewSpecialOfferModal').modal('hide');
+        });
+    });
+</script>
+
+<script>
+    function deleteSpecialOffer(specialOfferId) {
+        $.ajax({
+            url: '/admin/special-offer/' + specialOfferId,
+            type: 'DELETE',
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            },
+            success: function(response) {
+                alert('Special offer deleted successfully.');
+                 window.location.reload();
+            },
+            error: function(xhr, status, error) {
+                console.error(xhr.responseText);
+            }
+        });
+    }
+
+    $(document).ready(function() {
+        $(document).on('click', '.delete-special-offer-btn', function() {
+            const specialOfferId = $(this).data('special-sell-id');
+            if (confirm('Are you sure you want to delete this flash sell?')) {
+                deleteSpecialOffer(specialOfferId);
+            }
         });
     });
 </script>

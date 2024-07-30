@@ -36,6 +36,9 @@
                                         <a href="{{ route('flash-sell.edit', $flashSell->id) }}" class="btn btn-sm btn-primary">
                                             <i class="fas fa-edit"></i>
                                         </a>
+                                        <button class="btn btn-sm btn-danger delete-flash-sell-btn" data-flash-sell-id="{{ $flashSell->id }}">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
                                     </td>
                                 </tr>
                                 @endforeach
@@ -156,6 +159,34 @@
 
         $('#closeModalBtn').click(function() {
             $('#viewFlashSellModal').modal('hide');
+        });
+    });
+</script>
+
+<script>
+    function deleteFlashSell(flashSellId) {
+        $.ajax({
+            url: '/admin/flash-sell/' + flashSellId,
+            type: 'DELETE',
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            },
+            success: function(response) {
+                alert('Flash sell deleted successfully.');
+                 window.location.reload();
+            },
+            error: function(xhr, status, error) {
+                console.error(xhr.responseText);
+            }
+        });
+    }
+
+    $(document).ready(function() {
+        $(document).on('click', '.delete-flash-sell-btn', function() {
+            const flashSellId = $(this).data('flash-sell-id');
+            if (confirm('Are you sure you want to delete this flash sell?')) {
+                deleteFlashSell(flashSellId);
+            }
         });
     });
 </script>

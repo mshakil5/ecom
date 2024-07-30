@@ -12,30 +12,31 @@ use App\Models\Group;
 use App\Models\Unit;
 use App\Models\ProductImage;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Validator;
 
 class ProductController extends Controller
 {
     public function getProduct()
     {
-        $categories = Category::select('id', 'name')->orderby('id','DESC')->get();
         $brands = Brand::select('id', 'name')->orderby('id','DESC')->get();
         $product_models = ProductModel::select('id', 'name')->orderby('id','DESC')->get();
         $groups = Group::select('id', 'name')->orderby('id','DESC')->get();
         $units = Unit::select('id', 'name')->orderby('id','DESC')->get();
-        $data = Product::select('id', 'name', 'price', 'category_id', 'brand_id', 'product_model_id', 'group_id', 'unit_id', 'is_featured', 'is_recent', 'is_popular', 'is_trending')->orderby('id','DESC')->get();
-        return view('admin.product.index', compact('data', 'categories', 'brands', 'product_models', 'groups', 'units'));
+        $data = Product::select('id', 'name', 'price', 'category_id', 'sub_category_id', 'brand_id', 'product_model_id', 'group_id', 'unit_id', 'is_featured', 'is_recent', 'is_popular', 'is_trending')->orderby('id','DESC')->get();
+        return view('admin.product.index', compact('data', 'brands', 'product_models', 'groups', 'units'));
     }
 
     public function productStore(Request $request)
     {
-        $validatedData = $request->validate([
+        $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:255',
             'short_description' => 'nullable|string',
             'description' => 'required|string',
             'price' => 'required|numeric',
-            'category_id' => 'required ',
+            'category_id' => 'required',
+            'sub_category_id' => 'required',
             'brand_id' => 'required',
-            'product_model_id' => 'required ',
+            'product_model_id' => 'required',
             'group_id' => 'required',
             'unit_id' => 'required',
             'sku' => 'required|integer',
@@ -45,20 +46,26 @@ class ProductController extends Controller
             'images.*' => 'nullable|image|max:10240'
         ]);
 
+         if ($validator->fails()) {
+            $errorMessage = "<div class='alert alert-warning'><a href='#' class='close' data-dismiss='alert' aria-label='close'>&times;</a><b>" . implode(", ", $validator->errors()->all()) . "</b></div>";
+            return response()->json(['status' => 400, 'message' => $errorMessage]);
+        }
+
         $product = new Product;
-        $product->name = $validatedData['name'];
-        $product->slug = Str::slug($validatedData['name']);
-        $product->short_description = $validatedData['short_description'];
-        $product->description = $validatedData['description'];
-        $product->price = $validatedData['price'];
-        $product->category_id = $validatedData['category_id'];
-        $product->brand_id = $validatedData['brand_id'];
-        $product->product_model_id = $validatedData['product_model_id'];
-        $product->group_id = $validatedData['group_id'];
-        $product->unit_id = $validatedData['unit_id'];
-        $product->sku = $validatedData['sku'];
-        $product->is_featured = $validatedData['is_featured'];
-        $product->is_recent = $validatedData['is_recent'];
+        $product->name = $request->input('name');
+        $product->slug = Str::slug($request->input('name'));
+        $product->short_description = $request->input('short_description', null);
+        $product->description = $request->input('description');
+        $product->price = $request->input('price');
+        $product->category_id = $request->input('category_id');
+        $product->sub_category_id = $request->input('sub_category_id');
+        $product->brand_id = $request->input('brand_id');
+        $product->product_model_id = $request->input('product_model_id');
+        $product->group_id = $request->input('group_id');
+        $product->unit_id = $request->input('unit_id');
+        $product->sku = $request->input('sku');
+        $product->is_featured = $request->input('is_featured', false);
+        $product->is_recent = $request->input('is_recent', false);
         $product->created_by = auth()->user()->id;
 
         if ($request->hasFile('feature_image')) {
@@ -94,18 +101,19 @@ class ProductController extends Controller
 
     public function productEdit($id)
     {
-        $info = Product::where('id', $id)->with('category', 'brand', 'productModel', 'group', 'unit', 'images')->first();
+        $info = Product::where('id', $id)->with('category', 'brand', 'productModel', 'group', 'unit', 'images', 'subCategory')->first();
         return response()->json($info);
     }
 
     public function productUpdate(Request $request)
     {
-        $validatedData = $request->validate([
+       $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:255',
             'short_description' => 'nullable|string',
             'description' => 'required|string',
             'price' => 'required|numeric',
             'category_id' => 'required',
+            'sub_category_id' => 'required',
             'brand_id' => 'required',
             'product_model_id' => 'required',
             'group_id' => 'required',
@@ -113,23 +121,31 @@ class ProductController extends Controller
             'sku' => 'required|integer',
             'is_featured' => 'nullable',
             'is_recent' => 'nullable',
-            // 'images.*' => 'stringimage|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            'feature_image' => 'nullable|image|max:10240',
+            // 'images.*' => 'nullable|image|max:10240'
         ]);
+
+         if ($validator->fails()) {
+            $errorMessage = "<div class='alert alert-warning'><a href='#' class='close' data-dismiss='alert' aria-label='close'>&times;</a><b>" . implode(", ", $validator->errors()->all()) . "</b></div>";
+            return response()->json(['status' => 400, 'message' => $errorMessage]);
+        }
 
         $product = Product::find($request->codeid);
 
-        $product->name = $validatedData['name'];
-        $product->short_description = $validatedData['short_description'];
-        $product->description = $validatedData['description'];
-        $product->price = $validatedData['price'];
-        $product->category_id = $validatedData['category_id'];
-        $product->brand_id = $validatedData['brand_id'];
-        $product->product_model_id = $validatedData['product_model_id'];
-        $product->group_id = $validatedData['group_id'];
-        $product->unit_id = $validatedData['unit_id'];
-        $product->sku = $validatedData['sku'];
-        $product->is_featured = $request->input('is_featured');
-        $product->is_recent = $request->input('is_recent');
+        $product->name = $request->input('name');
+        $product->slug = Str::slug($request->input('name'));
+        $product->short_description = $request->input('short_description', null);
+        $product->description = $request->input('description');
+        $product->price = $request->input('price');
+        $product->category_id = $request->input('category_id');
+        $product->sub_category_id = $request->input('sub_category_id');
+        $product->brand_id = $request->input('brand_id');
+        $product->product_model_id = $request->input('product_model_id');
+        $product->group_id = $request->input('group_id');
+        $product->unit_id = $request->input('unit_id');
+        $product->sku = $request->input('sku');
+        $product->is_featured = $request->input('is_featured', false);
+        $product->is_recent = $request->input('is_recent', false);
         $product->updated_by = auth()->user()->id;
         $product->save();
 

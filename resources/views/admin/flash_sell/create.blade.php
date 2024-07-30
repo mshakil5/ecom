@@ -192,7 +192,7 @@
 
             $('#product_id').val('').trigger('change');
             $('#old_price').val('');
-            $('#flashPrice').val('');
+            $('#flash_sell_price').val('');
             $('#quantity').val('');
         });
 

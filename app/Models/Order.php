@@ -24,4 +24,19 @@ class Order extends Model
         return $this->belongsTo(DeliveryMan::class);
     }
 
+    public function cancelledOrder()
+    {
+        return $this->hasOne(CancelledOrder::class);
+    }
+
+    public function orderReturns()
+    {
+        return $this->hasMany(OrderReturn::class);
+    }
+
+    public function systemLoses()
+    {
+        return $this->hasMany(SystemLose::class, 'order_id');
+    }
+
 }

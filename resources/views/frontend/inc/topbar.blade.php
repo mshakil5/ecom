@@ -3,11 +3,6 @@
 @endphp
 
 <style>
-    .custom-ad-image {
-        margin: 0;
-        padding: 0;
-        overflow: hidden;
-    }
 
     .custom-ad-image img {
         width: 100%;
@@ -92,18 +87,18 @@
     </div>
 
     @php
-        $advertisements = \App\Models\Ad::where('status', 1)->get();
+        $advertisements = \App\Models\Ad::where('status', 1)->select('type', 'link', 'image')->get();
     @endphp
 
-    @foreach($advertisements as $advertisement)
-        @if($advertisement->type == 'home_page_top_bar')
-            <div class="advertisement-image custom-ad-image">
-                <a href="{{ $advertisement->link }}" target="_blank">
-                    <img src="{{ asset('images/ads/' . $advertisement->image) }}" class="img-fluid" alt="Advertisement">
-                </a>
-            </div>
-        @endif
-    @endforeach
+        @foreach($advertisements as $advertisement)
+            @if($advertisement->type == 'home_page_top_bar')
+                <div class="advertisement-image custom-ad-image py-3 px-xl-5">
+                    <a href="{{ $advertisement->link }}" target="_blank">
+                        <img src="{{ asset('images/ads/' . $advertisement->image) }}" class="img-fluid" alt="Advertisement">
+                    </a>
+                </div>
+            @endif
+        @endforeach
 
     <div class="row align-items-center bg-light py-3 px-xl-5 d-none d-lg-flex">
         <div class="col-lg-4">

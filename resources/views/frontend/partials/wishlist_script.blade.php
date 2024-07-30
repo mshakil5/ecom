@@ -15,7 +15,7 @@
 
         updateWishlistCount();
 
-        $('.add-to-wishlist').click(function(e) {
+        $(document).on('click', '.add-to-wishlist', function(e){
             e.preventDefault();
             var productId = $(this).data('product-id');
             var offerId = $(this).data('offer-id');
@@ -50,7 +50,7 @@
             updateWishlistCount();
         });
 
-        $('.wishlistBtn').click(function(e) {
+        $(document).on('click', '.wishlistBtn', function(e){
             e.preventDefault();
             var wishlist = JSON.parse(localStorage.getItem('wishlist')) || [];
             var wishlistJson = JSON.stringify(wishlist);

@@ -28,6 +28,7 @@ use App\Http\Controllers\Admin\DeliveryManController;
 use App\Http\Controllers\Admin\ReportController;
 use App\Http\Controllers\Admin\BundleProductController;
 use App\Http\Controllers\Admin\RoleController;
+use App\Http\Controllers\Admin\SubCategoryController;
 
 
 Route::group(['prefix' =>'admin/', 'middleware' => ['auth', 'is_admin']], function(){
@@ -110,6 +111,15 @@ Route::group(['prefix' =>'admin/', 'middleware' => ['auth', 'is_admin']], functi
 
     Route::post('/category-status', [CategoryController::class, 'toggleStatus']);
 
+    // Sub-Category crud
+    Route::get('/sub-category', [SubCategoryController::class, 'getSubCategory'])->name('allsubcategory');
+    Route::post('/sub-category', [SubCategoryController::class, 'subCategoryStore']);
+    Route::get('/sub-category/{id}/edit', [SubCategoryController::class, 'subCategoryEdit']);
+    Route::post('/sub-category-update', [SubCategoryController::class, 'subCategoryUpdate']);
+    Route::get('/sub-category/{id}', [SubCategoryController::class, 'subCategoryDelete']);
+
+    Route::post('/sub-category-status', [SubCategoryController::class, 'toggleStatus']);
+
     // Product crud
     Route::get('/product', [ProductController::class, 'getProduct'])->name('allproduct');
     Route::post('/product', [ProductController::class, 'productStore']);
@@ -184,6 +194,9 @@ Route::group(['prefix' =>'admin/', 'middleware' => ['auth', 'is_admin']], functi
     Route::get('/returned-orders', [OrderController::class, 'returnedOrders'])->name('returnedorders');
     Route::get('/cancelled-orders', [OrderController::class, 'cancelledOrders'])->name('cancelledorders');
 
+    Route::post('/send-to-stock', [StockController::class, 'sendToStock'])->name('send.to.stock');
+    Route::post('/send-to-systemlose', [StockController::class, 'sendToSystemLose'])->name('send.to.systemlose');
+
     Route::get('/orders/{orderId}/details', [OrderController::class, 'showOrder'])->name('admin.orders.details');
 
     Route::post('/orders/notify', [OrderController::class, 'markAsNotified'])->name('orders.notify');
@@ -209,6 +222,8 @@ Route::group(['prefix' =>'admin/', 'middleware' => ['auth', 'is_admin']], functi
     Route::get('/special-offers/{id}/edit', [SpecialOfferController::class, 'edit'])->name('special-offer.edit');
     Route::post('/update-offer', [SpecialOfferController::class, 'update'])->name('update.offer');
 
+    Route::delete('/special-offer/{id}', [SpecialOfferController::class, 'destroy'])->name('special-offer.delete');
+
     // Flash Sells
     Route::get('/create-flash-sell', [FlashSellController::class, 'createFlashSell'])->name('createflashsell');
     Route::post('/store-flash-sell', [FlashSellController::class, 'flashSellStore']); 
@@ -216,6 +231,8 @@ Route::group(['prefix' =>'admin/', 'middleware' => ['auth', 'is_admin']], functi
     Route::get('/flash-sell/{id}/details', [FlashSellController::class, 'getFlashSellDetails'])->name('flash-sell.details');
     Route::get('/flash-sell/{id}/edit', [FlashSellController::class, 'edit'])->name('flash-sell.edit');
     Route::post('/update-flash-sell', [FlashSellController::class, 'update'])->name('flash-sell.update');
+
+    Route::delete('/flash-sell/{id}', [FlashSellController::class, 'destroy'])->name('flash-sell.delete');
 
     Route::get('/in-house-sell', [InHouseSellController::class, 'inHouseSell'])->name('inhousesell');
 

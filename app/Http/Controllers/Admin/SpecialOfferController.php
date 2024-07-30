@@ -8,12 +8,14 @@ use App\Models\Product;
 use App\Models\SpecialOffer;
 use App\Models\SpecialOfferDetails;
 use Illuminate\Support\Str;
+use App\Models\CompanyDetails;
 
 class SpecialOfferController extends Controller
 {
     public function createSpecialOffer()
     {
         $products = Product::whereDoesntHave('flashSellDetails')
+                    ->whereDoesntHave('specialOfferDetails')
                     ->orderBy('id', 'DESC')
                     ->get();
 
@@ -141,6 +143,23 @@ class SpecialOfferController extends Controller
     public function show($slug)
     {
         $specialOffer = SpecialOffer::with('specialOfferDetails.product')->where('slug', $slug)->firstOrFail();
-        return view('frontend.special_offer', compact('specialOffer'));
+        $company = CompanyDetails::select('company_name')
+                             ->first();
+        $title = $company->company_name . ' - ' . $specialOffer->offer_name;
+        return view('frontend.special_offer', compact('specialOffer', 'title'));
+    }
+
+    public function destroy($id)
+    {
+        $specialOffer = SpecialOffer::findOrFail($id);
+        if ($specialOffer->offer_image) {
+            $imagePath = public_path('images/special_offer/' . $specialOffer->offer_image);
+            if (file_exists($imagePath)) {
+                unlink($imagePath);
+            }
+        }
+        $specialOffer->delete();
+
+        return response()->json(['message' => 'Flash sell deleted successfully.'], 200);
     }
 }

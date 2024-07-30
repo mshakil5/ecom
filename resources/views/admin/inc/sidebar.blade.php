@@ -58,12 +58,12 @@
                         <p>Returned Orders</p>
                     </a>
                 </li>
-                <!-- <li class="nav-item">
+                <li class="nav-item">
                     <a href="{{ route('cancelledorders') }}" class="nav-link {{ request()->is('admin/cancelled-orders*') ? 'active' : '' }}">
                         <i class="fas fa-ban nav-icon"></i>
                         <p>Cancelled Orders</p>
                     </a>
-                </li> -->
+                </li>
             </ul>
         </li>
 
@@ -81,8 +81,8 @@
             </a>
         </li>
 
-        <li class="nav-item dropdown {{ (request()->is('admin/category*') || request()->is('admin/brand*') || request()->is('admin/model*') || request()->is('admin/unit*') || request()->is('admin/group*') || request()->is('admin/product*') || request()->is('admin/bundle-product*')) ? 'menu-open' : '' }}">
-            <a href="#" class="nav-link dropdown-toggle {{ (request()->is('admin/category*') || request()->is('admin/brand*') || request()->is('admin/model*') || request()->is('admin/unit*') || request()->is('admin/group*') || request()->is('admin/product') | request()->is('admin/bundle-product*')) ? 'active' : '' }}">
+        <li class="nav-item dropdown {{ (request()->is('admin/category*') || request()->is('admin/brand*') || request()->is('admin/model*') || request()->is('admin/unit*') || request()->is('admin/group*') || request()->is('admin/product*') || request()->is('admin/bundle-product*') || request()->is('admin/sub-category*')) ? 'menu-open' : '' }}">
+            <a href="#" class="nav-link dropdown-toggle {{ (request()->is('admin/category*') || request()->is('admin/brand*') || request()->is('admin/model*') || request()->is('admin/unit*') || request()->is('admin/group*') || request()->is('admin/product') || request()->is('admin/bundle-product*') || request()->is('admin/sub-category*')) ? 'active' : '' }}">
                 <i class="nav-icon fas fa-clipboard-list"></i>
                 <p>
                     Inventory<i class="fas fa-angle-left right"></i>
@@ -99,6 +99,12 @@
                     <a href="{{ route('allcategory') }}" class="nav-link {{ (request()->is('admin/category*')) ? 'active' : '' }}">
                         <i class="far fa-list-alt nav-icon"></i>
                         <p>Categories</p>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="{{ route('allsubcategory') }}" class="nav-link {{ (request()->is('admin/sub-category*')) ? 'active' : '' }}">
+                        <i class="far fa-folder nav-icon"></i>
+                        <p>Sub Categories</p>
                     </a>
                 </li>
                 <li class="nav-item">

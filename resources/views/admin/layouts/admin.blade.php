@@ -2,7 +2,7 @@
 <html lang="{{ str_replace('_', '-', app()->getLocale())}}">
 
     @php
-        $company = \App\Models\CompanyDetails::first();
+        $company = \App\Models\CompanyDetails::select('fav_icon', 'company_name')->first();
     @endphp  
 
 <head>
@@ -11,10 +11,7 @@
   <meta name="csrf-token" content="{{ csrf_token() }}">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>{{ $company->company_name }}</title>
-
-    @php
-        $company = \App\Models\CompanyDetails::first();
-    @endphp  
+  
     <!-- Favicon -->
     <link rel="icon" href="{{ asset('images/company/' . $company->fav_icon) }}">
 
@@ -22,7 +19,6 @@
   <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
   <!-- Font Awesome -->
   <link rel="stylesheet" href="{{ asset('assets/admin/plugins/fontawesome-free/css/all.min.css')}}">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
   <!-- Ionicons -->
   <link rel="stylesheet" href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css">
   <!-- Theme style -->
@@ -33,10 +29,9 @@
   <link rel="stylesheet" href="{{ asset('assets/admin/datatables/dataTables.bootstrap4.min.css')}}">
   <link rel="stylesheet" href="{{ asset('assets/admin/datatables-responsive/css/responsive.bootstrap4.min.css')}}">
   <link rel="stylesheet" href="{{ asset('assets/admin/datatables-buttons/css/buttons.bootstrap4.min.css')}}">
-  <link rel="stylesheet" href="{{ asset('assets/css/summernote-lite.css')}}">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/summernote/0.8.20/summernote-bs4.min.css">
-  <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-beta.1/dist/css/select2.min.css" rel="stylesheet" /> 
-  
+  <link rel="stylesheet" href="{{ asset('assets/admin/select2/select2.min.css')}}">
+  <link rel="stylesheet" href="{{ asset('assets/admin/summernote/summernote-bs4.min.css')}}">
+  <!-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/summernote/0.8.20/summernote-bs4.min.css"> -->
   
 
 
@@ -159,11 +154,10 @@
 <script src="{{ asset('assets/admin/datatables-buttons/js/buttons.print.min.js')}}"></script>
 <script src="{{ asset('assets/admin/datatables-buttons/js/buttons.colVis.min.js')}}"></script>
 <script src="{{ asset('assets/admin/js/sweetalert.min.js')}}"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/summernote/0.8.20/summernote.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-beta.1/dist/js/select2.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
-
-
+<script src="{{ asset('assets/admin/select2/select2.min.js')}}"></script>
+<script src="{{ asset('assets/admin/moment/moment.min.js')}}"></script>
+<script src="{{ asset('assets/admin/summernote/summernote.min.js')}}"></script>
+<!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/summernote/0.8.20/summernote.min.js"></script> -->
 
 <script>
   // page schroll top

@@ -13,32 +13,162 @@ use App\Models\SpecialOfferDetails;
 use App\Models\FlashSell;
 use App\Models\FlashSellDetails;
 use App\Models\Coupon;
+use App\Models\SubCategory;
+use App\Models\Stock;
+use App\Models\SpecialOffer;
+use App\Models\SectionStatus;
+use App\Models\Ad;
+use App\Models\Supplier;
+use App\Models\Slider;
 
 class FrontendController extends Controller
 {
     public function index()
     {
-        return view('frontend.index');
+        $currency = CompanyDetails::value('currency');
+        $specialOffers = SpecialOffer::select('offer_image', 'offer_name', 'offer_title', 'slug')
+            ->where('status', 1)
+            ->whereDate('start_date', '<=', now())
+            ->whereDate('end_date', '>=', now())
+            ->latest()
+            ->get();
+        $flashSells = FlashSell::select('flash_sell_image', 'flash_sell_name', 'flash_sell_title', 'slug')
+            ->where('status', 1)
+            ->whereDate('start_date', '<=', now())
+            ->whereDate('end_date', '>=', now())
+            ->latest()
+            ->get();
+
+        $featuredProducts = Product::where('status', 1)
+            ->where('is_featured', 1)
+            ->whereDoesntHave('specialOfferDetails')
+            ->whereDoesntHave('flashSellDetails')
+            ->with('stock')
+            ->orderBy('id', 'desc')
+            ->select('id', 'name', 'feature_image', 'price', 'slug')
+            ->take(12)
+            ->get();
+
+        $trendingProducts = Product::where('status', 1)
+            ->where('is_trending', 1)
+            ->orderByDesc('id')
+            ->whereDoesntHave('specialOfferDetails')
+            ->whereDoesntHave('flashSellDetails')
+            ->with('stock')
+            ->select('id', 'name', 'feature_image', 'slug', 'price')
+            ->take(12)
+            ->get();
+
+        $recentProducts = Product::where('status', 1)
+            ->where('is_recent', 1)
+            ->orderBy('id', 'desc')
+            ->whereDoesntHave('specialOfferDetails')
+            ->whereDoesntHave('flashSellDetails')
+            ->with('stock')
+            ->select('id', 'name', 'feature_image', 'price', 'slug')
+            ->take(12)
+            ->get();
+
+        $popularProducts = Product::where('status', 1)
+            ->where('is_popular', 1)
+            ->orderBy('id', 'desc')
+            ->whereDoesntHave('specialOfferDetails')
+            ->whereDoesntHave('flashSellDetails')
+            ->with('stock')
+            ->select('id', 'name', 'feature_image', 'price', 'slug')
+            ->take(12)
+            ->get();
+
+        $initialCategoryProducts = Category::where('status', 1)
+            ->with(['products' => function($query) {
+                $query->select('id', 'name', 'feature_image', 'price', 'slug', 'category_id')
+                    ->where('status', 1)
+                    ->whereDoesntHave('specialOfferDetails')
+                    ->whereDoesntHave('flashSellDetails')
+                    ->orderBy('id', 'desc');
+            }])
+            ->select('id', 'name')
+            ->get();
+
+        $initialCategoryProducts->transform(function ($category) {
+            $category->setRelation('products', $category->products->take(6));
+            return $category;
+        });
+
+        $section_status = SectionStatus::first();
+        $advertisements = Ad::where('status', 1)->select('type', 'link', 'image')->get();
+
+        $suppliers = Supplier::orderBy('id', 'desc')
+                        ->select('id', 'name', 'image')
+                        ->get();
+
+         $sliders = Slider::orderBy('id', 'desc')
+                        ->select('title', 'sub_title', 'image')
+                        ->get();
+
+        $categories = Category::where('status', 1)->select('name', 'image', 'slug')->orderBy('id', 'desc')->take(2)->get();
+
+        return view('frontend.index', compact('specialOffers','flashSells','featuredProducts', 'trendingProducts', 'currency', 'recentProducts', 'popularProducts', 'initialCategoryProducts', 'section_status', 'advertisements', 'suppliers', 'sliders', 'categories'));
+    }
+
+    public function getCategoryProducts(Request $request)
+    {
+        $categoryId = $request->input('category_id');
+        $page = $request->input('page', 1);
+        $perPage = 6;
+
+        $query = Product::where('category_id', $categoryId)
+                        ->where('status', 1)
+                        ->whereDoesntHave('specialOfferDetails')
+                        ->whereDoesntHave('flashSellDetails')
+                        ->select('id', 'name', 'feature_image', 'price', 'slug')
+                        ->orderBy('id', 'desc');
+
+        $shownProducts = $request->input('shown_products', []);
+        if (!empty($shownProducts)) {
+            $query->whereNotIn('id', $shownProducts);
+        }
+
+        $products = $query->paginate($perPage, ['*'], 'page', $page);
+
+        return response()->json($products);
     }
 
     public function showCategoryProducts($slug)
     {
+        $currency = CompanyDetails::value('currency');
         $category = Category::where('slug', $slug)
                         ->with(['products:id,category_id,name,feature_image,price,slug'])
                         ->firstOrFail();
         $company = CompanyDetails::select('company_name')
                              ->first();
         $title = $company->company_name . ' - ' . $category->name;
-        return view('frontend.category_products', compact('category', 'title'));
+        return view('frontend.category_products', compact('category', 'title', 'currency'));
+    }
+
+    public function showSubCategoryProducts($slug)
+    {
+        $currency = CompanyDetails::value('currency');
+        $sub_category = SubCategory::where('slug', $slug)
+                        ->with(['products:id,sub_category_id,name,feature_image,price,slug'])
+                        ->firstOrFail();
+        $company = CompanyDetails::select('company_name')
+                             ->first();
+        $title = $company->company_name . ' - ' . $sub_category->name;
+        return view('frontend.sub_category_products', compact('sub_category', 'title', 'currency'));
     }
 
     public function showProduct($slug, $offerId = null)
     {
         $product = Product::where('slug', $slug)->with('images')->firstOrFail();
+        $product->watch = $product->watch + 1;
+        $product->save();
         $specialOffer = null;
         $flashSell = null;
         $offerPrice = null;
         $flashSellPrice = null;
+        $oldOfferPrice = null;
+        $OldFlashSellPrice = null;
 
         if ($offerId == 1) {
             $specialOffer = SpecialOfferDetails::where('product_id', $product->id)
@@ -48,6 +178,7 @@ class FrontendController extends Controller
                 })
                 ->first();
             $offerPrice = $specialOffer ? $specialOffer->offer_price : null;
+            $oldOfferPrice = $specialOffer ? $specialOffer->old_price : null;
         } elseif ($offerId == 2) {
             $flashSell = FlashSellDetails::where('product_id', $product->id)
                 ->whereHas('flashsell', function ($query) {
@@ -57,31 +188,31 @@ class FrontendController extends Controller
                 ->first();
             
             $flashSellPrice = $flashSell ? $flashSell->flash_sell_price : null;
+            $OldFlashSellPrice = $flashSell ? $flashSell->old_price : null;
         }
 
         $regularPrice = $product->price;
 
-        $company = CompanyDetails::first();
-        $title = $company->company_name . ' - ' . $product->name;
+        $company_name = CompanyDetails::value('company_name');
+        $title = $company_name . ' - ' . $product->name;
+        $currency = CompanyDetails::value('currency');
 
         $relatedProducts = Product::where('category_id', $product->category_id)
+            ->whereDoesntHave('specialOfferDetails')
+            ->whereDoesntHave('flashSellDetails')
             ->where('id', '!=', $product->id)
             ->orderByDesc('created_at')
             ->take(5)
             ->get();
 
-        return view('frontend.product.single_product', compact('product', 'relatedProducts', 'title', 'regularPrice', 'offerPrice', 'flashSellPrice', 'offerId'));
+        return view('frontend.product.single_product', compact('product', 'relatedProducts', 'title', 'regularPrice', 'offerPrice', 'flashSellPrice', 'offerId', 'currency', 'oldOfferPrice', 'OldFlashSellPrice'));
     }
 
     public function showWishlist(Request $request)
     {
         $wishlistJson = $request->input('wishlist');
-        $wishlist = $wishlistJson ? json_decode($wishlistJson, true) : [];
-
-        if (!is_array($wishlist)) {
-            $wishlist = [];
-        }
-        
+        $wishlist = json_decode($wishlistJson, true);
+ 
         $productIds = array_column($wishlist, 'productId');
         $products = Product::whereIn('id', $productIds)->get();
 
@@ -107,13 +238,8 @@ class FrontendController extends Controller
 
     public function showCart(Request $request)
     {
-        $cart = $request->input('cart', '[]');
-        $cart = json_decode($cart, true);
-
-        if (!is_array($cart)) {
-            $cart = [];
-        }
-
+        $cartlistJson = $request->input('cartlist');
+        $cart = json_decode($cartlistJson, true);
         return view('frontend.cart', compact('cart'));
     }
 
@@ -131,6 +257,7 @@ class FrontendController extends Controller
                             ->orderBy('id', 'desc')
                             ->whereDoesntHave('specialOfferDetails')
                             ->whereDoesntHave('flashSellDetails')
+                            ->take(15)
                             ->get();
 
         if ($products->isEmpty()) {
@@ -153,17 +280,24 @@ class FrontendController extends Controller
     public function shop()
     {
          $currency = CompanyDetails::value('currency');
+         $categories = Category::where('status', 1)
+            ->orderBy('id', 'desc')
+            ->select('id', 'name')
+            ->get();
          $products = Product::where('status', 1)
-                ->orderBy('id', 'desc')
-                ->whereDoesntHave('specialOfferDetails')
-                ->whereDoesntHave('flashSellDetails')
-                ->get();
-        return view('frontend.shop', compact('currency', 'products'));
+            ->orderBy('id', 'desc')
+            ->whereDoesntHave('specialOfferDetails')
+            ->whereDoesntHave('flashSellDetails')
+            ->with('stock')
+            ->select('id', 'name', 'feature_image', 'price', 'slug')
+            ->get();
+        return view('frontend.shop', compact('currency', 'products', 'categories'));
     }
 
     public function contact()
     {
-        return view('frontend.contact');
+        $companyDetails = CompanyDetails::select('google_map', 'address1', 'email1', 'phone1')->first();
+        return view('frontend.contact', compact('companyDetails'));
     }
 
     public function storeContact(Request $request)
@@ -187,7 +321,8 @@ class FrontendController extends Controller
 
     public function aboutUs()
     {
-        return view('frontend.about');
+        $companyDetails = CompanyDetails::select('about_us')->first();
+        return view('frontend.about', compact('companyDetails'));
     }
 
     public function checkCoupon(Request $request)
@@ -204,5 +339,31 @@ class FrontendController extends Controller
             return response()->json(['success' => false]);
         }
     }
-    
+
+    public function filter(Request $request)
+    {
+        $startPrice = $request->input('start_price');
+        $endPrice = $request->input('end_price');
+        $categoryId = $request->input('category');
+
+        $productsQuery = Product::select('id', 'name', 'price', 'slug', 'feature_image')
+                                ->where('status', 1)
+                                ->orderBy('id', 'desc')
+                                ->whereDoesntHave('specialOfferDetails')
+                                ->whereDoesntHave('flashSellDetails')
+                                ->with('stock');
+
+        if ($startPrice !== null && $endPrice !== null) {
+            $productsQuery->whereBetween('price', [$startPrice, $endPrice]);
+        }
+
+        if (!empty($categoryId)) {
+            $productsQuery->where('category_id', $categoryId);
+        }
+
+        $products = $productsQuery->get();
+
+        return response()->json(['products' => $products]);
+    }
+
 }

@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\DB;
 use App\Models\PurchaseReturn;
 use DataTables;
 use App\Models\SystemLose;
+use App\Models\OrderReturn;
 
 class StockController extends Controller
 {
@@ -66,7 +67,6 @@ class StockController extends Controller
             'discount' => 'nullable|numeric',
             'total_vat_amount' => 'required|numeric',
             'net_amount' => 'required|numeric',
-            'paid_amount' => 'required|numeric',
             'due_amount' => 'required|numeric',
             'products' => 'required|array',
             'products.*.product_id' => 'required|exists:products,id',
@@ -418,6 +418,80 @@ class StockController extends Controller
     {
         $systemLosses = SystemLose::with('product')->latest()->get();
         return view('admin.stock.system_losses', compact('systemLosses'));
+    }
+
+    public function sendToStock(Request $request)
+    {
+        // dd($request->all());
+        $request->validate([
+            'product_id' => 'required|exists:products,id',
+            'quantity' => 'required|numeric|min:1',
+        ]);
+
+        $product_id = $request->input('product_id');
+        $quantity = $request->input('quantity');
+
+        $stock = Stock::where('product_id', $product_id)->first();
+
+        if ($stock) {
+            $stock->quantity += $quantity;
+            $stock->updated_by = auth()->user()->id;
+            $stock->save();
+        } else {
+            $newStock = new Stock();
+            $newStock->product_id = $product_id;
+            $newStock->quantity = $quantity;
+            $newStock->created_by = auth()->user()->id;
+            $newStock->save();
+        }
+
+        $orderReturn = OrderReturn::where('product_id', $product_id)
+            ->where('order_id', $request->order_id)
+            ->first();
+
+        if ($orderReturn) {
+            $orderReturn->new_quantity -= $quantity;
+            $orderReturn->return_stock = $quantity;
+            $orderReturn->save();
+        }
+
+
+        return redirect()->back()->with('success', 'Stock updated successfully.');
+    }
+
+    public function sendToSystemLose(Request $request)
+    {
+        // dd($request->all());
+        $request->validate([
+            'product_id' => 'required|exists:products,id',
+            'quantity' => 'required|numeric|min:1',
+        ]);
+
+        $product_id = $request->input('product_id');
+        $quantity = $request->input('quantity');
+
+
+        $systemLoss = new SystemLose();
+        $systemLoss->product_id = $product_id;
+        $systemLoss->order_id = $request->order_id;
+        $systemLoss->quantity = $quantity;
+        $systemLoss->reason = $request->input('reason');
+        $systemLoss->created_by = auth()->user()->id;
+        $systemLoss->save();
+
+
+        $orderReturn = OrderReturn::where('product_id', $product_id)
+            ->where('order_id', $request->order_id)
+            ->first();
+            
+
+        if ($orderReturn) {
+            $orderReturn->new_quantity -= $quantity;
+            $orderReturn->system_lose = $quantity;
+            $orderReturn->save();
+        }
+
+        return redirect()->back()->with('success', 'Sent to system lose successfully.');
     }
 
 }

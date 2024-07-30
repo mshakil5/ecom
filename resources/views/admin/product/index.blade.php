@@ -69,11 +69,22 @@
                                     <label for="category">Category</label>
                                     <select class="form-control" id="category">
                                         <option value="">Select Category</option>
-                                        @foreach(\App\Models\Category::with('products')->get() as $category)
+                                        @foreach(\App\Models\Category::with('subcategories')->get() as $category)
                                         <option value="{{ $category->id }}">{{ $category->name }}</option>
                                         @endforeach
                                     </select>
                                 </div>
+
+                                <div class="form-group col-md-4">
+                                    <label for="subcategory">Sub Category</label>
+                                    <select class="form-control" id="subcategory">
+                                        <option value="">Select Sub Category</option>
+                                        @foreach(\App\Models\SubCategory::all() as $subcategory)
+                                            <option class="subcategory-option category-{{ $subcategory->category_id }}" value="{{ $subcategory->id }}">{{ $subcategory->name }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+
                                 <div class="form-group col-md-4">
                                     <label for="brand">Brand</label>
                                     <select class="form-control" id="brand">
@@ -83,6 +94,7 @@
                                         @endforeach
                                     </select>
                                 </div>
+
                                 <div class="form-group col-md-4">
                                     <label for="model">Model</label>
                                     <select class="form-control" id="model">
@@ -92,9 +104,6 @@
                                         @endforeach
                                     </select>
                                 </div>
-                            </div>
-
-                            <div class="form-row">
 
                                 <div class="form-group col-md-4">
                                     <label for="unit">Unit</label>
@@ -171,10 +180,9 @@
                                     <th>Name</th>
                                     <th>Price</th>
                                     <th>Category</th>
+                                    <th>Sub Category</th>
                                     <th>Brand</th>
                                     <th>Model</th>
-                                    <th>Unit</th>
-                                    <th>Group</th>
                                     <th>Featured</th>
                                     <th>Recent</th>
                                     <th>Popular</th>
@@ -189,10 +197,9 @@
                                     <td>{{ $data->name }}</td>
                                     <td>{{ $data->price }}</td>
                                     <td>{{ $data->category->name }}</td>
-                                    <td>{{ $data->brand->name }}</td>
-                                    <td>{{ $data->productModel->name }}</td>
-                                    <td>{{ $data->unit->name }}</td>
-                                    <td>{{ $data->group->name }}</td> 
+                                    <td>@if ($data->subCategory) {{ $data->subCategory->name }} @endif</td>
+                                    <td>@if ($data->brand) {{ $data->brand->name }} @endif</td>
+                                    <td>@if ($data->productModel) {{ $data->productModel->name }} @endif</td>
                                     <td>
                                         <div class="custom-control custom-switch">
                                             <input type="checkbox" class="custom-control-input toggle-featured" id="customSwitch{{ $data->id }}" data-id="{{ $data->id }}" {{ $data->is_featured == 1 ? 'checked' : '' }}>
@@ -284,6 +291,21 @@
 @section('script')
 
 <script>
+    $(document).ready(function() {
+        $('#category').change(function() {
+            var categoryId = $(this).val();
+            if (categoryId) {
+                $('#subcategory').val('').find('option').hide();
+                $('.category-' + categoryId).show();
+            } else {
+                $('#subcategory').val('').find('option').hide();
+                $('#subcategory').find('.subcategory-option').show();
+            }
+        });
+    });
+</script>
+
+<script>
     $(function () {
       $("#example1").DataTable({
         "responsive": true, "lengthChange": false, "autoWidth": false,
@@ -321,6 +343,7 @@
                 form_data.append("short_description", $("#short_description").val());
                 form_data.append("price", $("#price").val());
                 form_data.append("category_id", $("#category").val());
+                form_data.append("sub_category_id", $("#subcategory").val());
                 form_data.append("brand_id", $("#brand").val());
                 form_data.append("product_model_id", $("#model").val());
                 form_data.append("group_id", $("#group").val());
@@ -365,7 +388,7 @@
                 processData: false,
                 data:form_data,
                 success: function (d) {
-                    if (d.status == 303) {
+                    if (d.status == 400) {
                         $(".ermsg").html(d.message);
                     }else if(d.status == 300){
                         $(".ermsg").html(d.message);
@@ -387,6 +410,7 @@
                 form_data.append("short_description", $("#short_description").val());
                 form_data.append("price", $("#price").val());
                 form_data.append("category_id", $("#category").val());
+                form_data.append("sub_category_id", $("#subcategory").val());
                 form_data.append("brand_id", $("#brand").val());
                 form_data.append("product_model_id", $("#model").val());
                 form_data.append("group_id", $("#group").val());
@@ -445,7 +469,7 @@
                   data:form_data,
                   success: function(d){
                     //   console.log(d);
-                      if (d.status == 303) {
+                      if (d.status == 400) {
                           $(".ermsg").html(d.message);
                           pagetop();
                       }else if(d.status == 300){
@@ -509,6 +533,7 @@
           $("#is_featured").prop('checked', data.is_featured == 1 ? true : false);
           $("#is_recent").prop('checked', data.is_recent == 1 ? true : false);
           $("#category").val(data.category_id);
+          $("#subcategory").val(data.sub_category_id);
           $("#brand").val(data.brand_id);
           $("#model").val(data.product_model_id);
           $("#group").val(data.group_id);

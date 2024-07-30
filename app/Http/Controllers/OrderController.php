@@ -14,6 +14,9 @@ use App\Models\SpecialOfferDetails;
 use App\Models\FlashSellDetails;
 use App\Models\DeliveryMan;
 use DataTables;
+use App\Models\CancelledOrder;
+use App\Models\OrderReturn;
+use Illuminate\Support\Facades\Validator;
 
 class OrderController extends Controller
 {
@@ -282,19 +285,20 @@ class OrderController extends Controller
     }
     public function returnedOrders()
     {
-        $orders = Order::with('user')
-                ->where('status', 6)
-                ->orderBy('id', 'desc')
-                ->get();
-        return view('admin.orders.index', compact('orders'));
+        $orders = Order::with(['user', 'orderReturns.product'])
+                    ->where('status', 6)
+                    ->orderBy('id', 'desc')
+                    ->get();
+
+        return view('admin.orders.returned', compact('orders'));
     }
     public function cancelledOrders()
     {
-        $orders = Order::with('user')
+        $orders = Order::with('user', 'cancelledOrder')
                 ->where('status', 7)
                 ->orderBy('id', 'desc')
                 ->get();
-        return view('admin.orders.index', compact('orders'));
+        return view('admin.orders.cancelled', compact('orders'));
     }
 
     public function updateStatus(Request $request)
@@ -344,6 +348,84 @@ class OrderController extends Controller
         }
 
         return response()->json(['success' => false], 404);
+    }
+
+    public function showOrderUser($orderId)
+    {
+        $order = Order::with(['user', 'orderDetails.product'])
+            ->where('id', $orderId)
+            ->firstOrFail();
+        return view('user.order_details', compact('order'));
+    }
+
+    public function cancel(Request $request, $orderId)
+    {
+        $order = Order::findOrFail($orderId);
+
+        if (in_array($order->status, [4, 5, 6, 7])) {
+            return response()->json(['error' => 'Order cannot be cancelled.'], 400);
+        }
+
+        $order->status = 7;
+        $order->save();
+
+        $orderDetails = OrderDetails::where('order_id', $order->id)->get();
+
+        foreach ($orderDetails as $detail) {
+            $stock = Stock::where('product_id', $detail->product_id)
+                        ->where('color', $detail->color)
+                        ->first();
+
+            if ($stock) {
+                $stock->quantity += $detail->quantity;
+                $stock->save();
+            }
+        }
+
+        CancelledOrder::create([
+            'order_id' => $order->id,
+            'reason' => $request->input('reason'),
+            'cancelled_by' => auth()->id(),
+        ]);
+
+        return response()->json(['success' => true]);
+    }
+
+    public function getOrderDetailsModal(Request $request)
+    {
+        $orderId = $request->get('order_id');
+        $order = Order::with('orderDetails.product')->findOrFail($orderId);
+        
+        return response()->json([
+            'order' => $order,
+            'orderDetails' => $order->orderDetails
+        ]);
+    }
+
+    public function returnStore(Request $request)
+    {
+        $data = $request->all();
+
+        $order_id = $data['order_id'];
+
+        $order = Order::find($order_id);
+        $order->status = 6;
+        $order->save();
+
+        $return_items = $data['return_items'];
+
+        foreach ($return_items as $item) {
+            $orderReturn = new OrderReturn();
+            $orderReturn->product_id = $item['product_id'];
+            $orderReturn->order_id = $order_id;
+            $orderReturn->quantity = $item['return_quantity'];
+            $orderReturn->new_quantity = $item['return_quantity'];
+            $orderReturn->reason = $item['return_reason'] ?? '';
+            $orderReturn->returned_by = auth()->user()->id;
+            $orderReturn->save();
+        }
+
+        return response()->json(['message' => 'Order return submitted successfully'], 200);
     }
 
 }

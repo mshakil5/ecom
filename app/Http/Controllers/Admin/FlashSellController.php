@@ -8,12 +8,14 @@ use App\Models\Product;
 use App\Models\FlashSell;
 use Illuminate\Support\Str;
 use App\Models\FlashSellDetails;
+use App\Models\CompanyDetails;
 
 class FlashSellController extends Controller
 {
     public function createFlashSell()
     {
         $products = Product::whereDoesntHave('specialOfferDetails')
+                    ->whereDoesntHave('flashSellDetails')
                     ->orderBy('id', 'DESC')
                     ->get();
 
@@ -141,9 +143,24 @@ class FlashSellController extends Controller
     public function show($slug)
     {
         $flashSell = FlashSell::with('FlashSellDetails.product')->where('slug', $slug)->firstOrFail();
-        // dd($flashSell);
-        return view('frontend.flash_sell', compact('flashSell'));
+        $company = CompanyDetails::select('company_name')
+                             ->first();
+        $title = $company->company_name . ' - ' . $flashSell->flash_sell_name;
+        return view('frontend.flash_sell', compact('flashSell', 'title'));
     }
 
+    public function destroy($id)
+    {
+        $flashSell = FlashSell::findOrFail($id);
+        if ($flashSell->flash_sell_image) {
+            $imagePath = public_path('images/flash_sell/' . $flashSell->flash_sell_image);
+            if (file_exists($imagePath)) {
+                unlink($imagePath);
+            }
+        }
+        $flashSell->delete();
+
+        return response()->json(['message' => 'Flash sell deleted successfully.'], 200);
+    }
 
 }

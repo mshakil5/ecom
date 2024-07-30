@@ -6,7 +6,7 @@
             $('.cartCount').text(cartCount);
         }
 
-        $('.add-to-cart').click(function(e) {
+        $(document).on('click', '.add-to-cart', function(e) {
             e.preventDefault();
 
             var productId = $(this).data('product-id');
@@ -38,9 +38,6 @@
             }
 
             localStorage.setItem('cart', JSON.stringify(cart));
-
-            // console.log('Updated Cart:', cart);
-
             updateCartCount();
 
             swal({
@@ -60,8 +57,6 @@
             if (index !== undefined) {
                 cart.splice(index, 1);
                 localStorage.setItem('cart', JSON.stringify(cart));
-                // console.log('Updated Cart:', cart);
-
                 swal({
                     text: "Removed from cart",
                     icon: "success",
@@ -74,51 +69,11 @@
             }
         });
 
-        $('.cartBtn').click(function(e) {
+        $(document).on('click', '.cartBtn', function(e){
             e.preventDefault();
-            var cart = JSON.parse(localStorage.getItem('cart')) || [];
-
-            // console.log('Sending cart data:', cart);
-            // localStorage.removeItem('cart');
-            
-            $.ajax({
-                type: "POST",
-                url: "{{ route('cart.index') }}",
-                data: {
-                    _token: "{{ csrf_token() }}",
-                    cart: JSON.stringify(cart) 
-                },
-                success: function(response) {
-                    $('body').html(response);
-                    history.pushState({}, '', '{{ route('cart.index') }}');
-                },
-                error: function(response) {
-                    // console.log('Error:', response);
-                }
-            });
-        });
-
-        $('.cartLink').click(function(e) {
-            e.preventDefault();
-            var cart = JSON.parse(localStorage.getItem('cart')) || [];
-            // console.log('Sending cart data:', cart);
-            // localStorage.removeItem('cart');
-            
-            $.ajax({
-                type: "POST",
-                url: "{{ route('cart.index') }}",
-                data: {
-                    _token: "{{ csrf_token() }}",
-                    cart: JSON.stringify(cart) 
-                },
-                success: function(response) {
-                    $('body').html(response);
-                    history.pushState({}, '', '{{ route('cart.index') }}');
-                },
-                error: function(response) {
-                    // console.log('Error:', response);
-                }
-            });
+            var cartlist = JSON.parse(localStorage.getItem('cart')) || [];
+            var cartJson = JSON.stringify(cartlist);
+            window.location.href = "{{ route('cart.index') }}?cartlist=" + encodeURIComponent(cartJson);
         });
 
         updateCartCount();
