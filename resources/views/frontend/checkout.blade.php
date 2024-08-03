@@ -5,6 +5,7 @@
 <div class="container-fluid">
     <div class="row px-xl-5">
         <div class="col-lg-7">
+            <div id="alertContainer"></div>
             <h5 class="section-title position-relative text-uppercase mb-3"><span class="bg-secondary pr-3"> Shipping Address</span></h5>
             <div class="bg-light p-30 mb-5">
                 <div class="row">
@@ -334,7 +335,17 @@
                     });
                 },
                 error: function(xhr, status, error) {
-                   console.error(xhr.responseText);
+                    if (xhr.status === 422) {
+                        var errors = xhr.responseJSON.errors;
+                        var firstError = Object.values(errors)[0][0];
+                        var errorHtml = '<div class="alert alert-warning"><a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>';
+                        errorHtml += '<b>' + firstError + '</b><br>';
+                        errorHtml += '</div>';
+                        $('#alertContainer').html(errorHtml);
+                        $('html, body').animate({ scrollTop: 100 }, 'smooth');
+                    } else {
+                        console.error(xhr.responseText);
+                    }
                 }
             });
         });

@@ -208,9 +208,15 @@ class FrontendController extends Controller
         return view('frontend.product.single_product', compact('product', 'relatedProducts', 'title', 'regularPrice', 'offerPrice', 'flashSellPrice', 'offerId', 'currency', 'oldOfferPrice', 'OldFlashSellPrice'));
     }
 
+    public function storeWishlist(Request $request)
+    {
+        $request->session()->put('wishlist', $request->input('wishlist'));
+        return response()->json(['success' => true]);
+    }
+
     public function showWishlist(Request $request)
     {
-        $wishlistJson = $request->input('wishlist');
+        $wishlistJson = $request->session()->get('wishlist', '[]');
         $wishlist = json_decode($wishlistJson, true);
  
         $productIds = array_column($wishlist, 'productId');
@@ -236,14 +242,21 @@ class FrontendController extends Controller
         return view('frontend.wish_list', compact('products'));
     }
 
+    public function storeCart(Request $request)
+    {
+        $request->session()->put('cart', $request->input('cart'));
+
+        return response()->json(['success' => true]);
+    }
+
     public function showCart(Request $request)
     {
-        $cartlistJson = $request->input('cartlist');
-        $cart = json_decode($cartlistJson, true);
+        $cartJson = $request->session()->get('cart', '[]');
+        $cart = json_decode($cartJson, true);
         return view('frontend.cart', compact('cart'));
     }
 
-    public function storeCart(Request $request)
+    public function checkout(Request $request)
     {
         $cart = json_decode($request->input('cart'), true);
         return view('frontend.checkout', compact('cart'));

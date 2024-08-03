@@ -72,8 +72,18 @@
         $(document).on('click', '.cartBtn', function(e){
             e.preventDefault();
             var cartlist = JSON.parse(localStorage.getItem('cart')) || [];
-            var cartJson = JSON.stringify(cartlist);
-            window.location.href = "{{ route('cart.index') }}?cartlist=" + encodeURIComponent(cartJson);
+            
+            $.ajax({
+                url: "{{ route('cart.store') }}",
+                method: "PUT",
+                data: {
+                    _token: "{{ csrf_token() }}",
+                    cart: JSON.stringify(cartlist)
+                },
+                success: function() {
+                    window.location.href = "{{ route('cart.index') }}";
+                }
+            });
         });
 
         updateCartCount();

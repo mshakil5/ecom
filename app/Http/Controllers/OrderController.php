@@ -22,6 +22,29 @@ class OrderController extends Controller
 {
     public function placeOrder(Request $request)
     {
+
+         $validator = Validator::make($request->all(), [
+            'name' => 'required|string|max:255',
+            'surname' => 'required|string|max:255',
+            'email' => 'required|email|max:255',
+            'phone' => 'required|string|max:20',
+            'house_number' => 'required|string|max:255',
+            'street_name' => 'required|string|max:255',
+            'town' => 'required|string|max:255',
+            'postcode' => 'required|string|max:20',
+            'address' => 'required|string|max:255',
+            'payment_method' => 'required',
+            'order_summary.*.quantity' => 'required|numeric|min:1',
+            'order_summary.*.size' => 'nullable|string|max:255',
+            'order_summary.*.color' => 'nullable|string|max:255',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'errors' => $validator->errors()
+            ], 422);
+        }
+
         $formData = $request->all();
         $pdfUrl = null;
 

@@ -53,8 +53,18 @@
         $(document).on('click', '.wishlistBtn', function(e){
             e.preventDefault();
             var wishlist = JSON.parse(localStorage.getItem('wishlist')) || [];
-            var wishlistJson = JSON.stringify(wishlist);
-            window.location.href = "{{ route('wishlist.index') }}?wishlist=" + encodeURIComponent(wishlistJson);
+            
+            $.ajax({
+                url: "{{ route('wishlist.store') }}",
+                method: "PUT",
+                data: {
+                    _token: "{{ csrf_token() }}",
+                    wishlist: JSON.stringify(wishlist)
+                },
+                success: function() {
+                    window.location.href = "{{ route('wishlist.index') }}";
+                }
+            });
         });
 
         $('.add-to-wishlist').each(function() {

@@ -55,15 +55,17 @@ Route::get('/contact', [FrontendController::class, 'contact'])->name('frontend.c
 Route::post('/contact-us', [FrontendController::class, 'storeContact'])->name('contact.store');
 
 // Wish list
+Route::put('/wishlist/store', [FrontendController::class, 'storeWishlist'])->name('wishlist.store');
 Route::get('/wishlist', [FrontendController::class, 'showWishlist'])->name('wishlist.index');
 
 // Search products
 Route::get('/search/products', [FrontendController::class, 'search'])->name('search.products');
 
 // Cart list
+Route::put('/cart/store', [FrontendController::class, 'storeCart'])->name('cart.store');
 Route::get('/cart', [FrontendController::class, 'showCart'])->name('cart.index');
 
-Route::post('/checkout', [FrontendController::class, 'storeCart'])->name('checkout.store');
+Route::post('/checkout', [FrontendController::class, 'checkout'])->name('checkout.store');
 
 Route::post('/place-order', [OrderController::class, 'placeOrder'])->name('place.order');
 
