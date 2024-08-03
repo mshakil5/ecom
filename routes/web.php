@@ -8,6 +8,7 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\Admin\SpecialOfferController;
 use App\Http\Controllers\Admin\FlashSellController;
+use App\Http\Controllers\PayPalController;
   
 
 // cache clear
@@ -68,6 +69,9 @@ Route::get('/cart', [FrontendController::class, 'showCart'])->name('cart.index')
 Route::post('/checkout', [FrontendController::class, 'checkout'])->name('checkout.store');
 
 Route::post('/place-order', [OrderController::class, 'placeOrder'])->name('place.order');
+
+Route::get('payment/success', [OrderController::class, 'paymentSuccess'])->name('payment.success');
+Route::get('payment/cancel', [OrderController::class, 'paymentCancel'])->name('payment.cancel');
 
 Route::get('/order/{encoded_order_id}', [OrderController::class, 'generatePDF'])->name('generate-pdf');
 

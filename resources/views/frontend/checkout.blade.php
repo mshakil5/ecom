@@ -319,20 +319,23 @@
                 type: 'POST',
                 data: formData,
                 success: function(response) {
+                    console.log(response);
+
+                    window.location.href = response.redirectUrl;
                     localStorage.removeItem('cart');
                     updateCartCount();
 
-                    swal({
-                        text: "Order Placed Successfully. Thank you for shopping with us.",
-                        icon: "success",
-                        button: {
-                            text: "OK",
-                            className: "swal-button--confirm"
-                        }
-                    }).then(() => {
-                        window.open(response.pdf_url, '_blank');
-                        window.location.href = '{{ route('frontend.homepage') }}';
-                    });
+                    // swal({
+                    //     text: "Order Placed Successfully. Thank you for shopping with us.",
+                    //     icon: "success",
+                    //     button: {
+                    //         text: "OK",
+                    //         className: "swal-button--confirm"
+                    //     }
+                    // }).then(() => {
+                    //     window.open(response.pdf_url, '_blank');
+                    //     window.location.href = '{{ route('frontend.homepage') }}';
+                    // });
                 },
                 error: function(xhr, status, error) {
                     if (xhr.status === 422) {

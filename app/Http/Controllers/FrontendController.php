@@ -239,6 +239,7 @@ class FrontendController extends Controller
             }
         }
 
+        $request->session()->forget('wishlist');
         return view('frontend.wish_list', compact('products'));
     }
 
@@ -253,6 +254,7 @@ class FrontendController extends Controller
     {
         $cartJson = $request->session()->get('cart', '[]');
         $cart = json_decode($cartJson, true);
+        $request->session()->forget('cart');
         return view('frontend.cart', compact('cart'));
     }
 
