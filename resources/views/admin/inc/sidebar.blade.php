@@ -314,6 +314,13 @@
         </li>
 
         <li class="nav-item">
+            <a href="{{ route('allpaymentgateways') }}" class="nav-link {{ (request()->is('admin/payment-gateway*')) ? 'active' : '' }}">
+                <i class="nav-icon fas fa-credit-card"></i>
+                <p>Payment Getways</p>
+            </a>
+        </li>
+
+        <li class="nav-item">
             <a href="{{ route('reports.index') }}" class="nav-link {{ 
                 request()->is('admin/reports') ||
                 request()->is('admin/daily-sale') ||

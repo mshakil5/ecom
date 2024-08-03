@@ -29,6 +29,7 @@ use App\Http\Controllers\Admin\ReportController;
 use App\Http\Controllers\Admin\BundleProductController;
 use App\Http\Controllers\Admin\RoleController;
 use App\Http\Controllers\Admin\SubCategoryController;
+use App\Http\Controllers\Admin\PaymentGatewayController;
 
 
 Route::group(['prefix' =>'admin/', 'middleware' => ['auth', 'is_admin']], function(){
@@ -288,6 +289,12 @@ Route::group(['prefix' =>'admin/', 'middleware' => ['auth', 'is_admin']], functi
     Route::post('role', [RoleController::class, 'store'])->name('admin.rolestore');
     Route::get('role/{id}', [RoleController::class, 'edit'])->name('admin.roleedit');
     Route::post('role-update', [RoleController::class, 'update'])->name('admin.roleupdate');
+
+    // Payment gateway crud
+    Route::get('/payment-gateway', [PaymentGatewayController::class, 'index'])->name('allpaymentgateways');
+    Route::post('/payment-gateway', [PaymentGatewayController::class, 'store']);
+    Route::get('/payment-gateway/{id}/edit', [PaymentGatewayController::class, 'edit']);
+    Route::post('/payment-gateway-update', [PaymentGatewayController::class, 'update']);
 
 });
   
