@@ -319,11 +319,10 @@
                 type: 'POST',
                 data: formData,
                 success: function(response) {
-                    console.log(response);
-
-                    window.location.href = response.redirectUrl;
+                    // console.log(response);
                     localStorage.removeItem('cart');
                     updateCartCount();
+                    window.location.href = response.redirectUrl;
 
                     // swal({
                     //     text: "Order Placed Successfully. Thank you for shopping with us.",
