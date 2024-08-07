@@ -200,7 +200,11 @@
                         <span id="couponValue"></span> <span id="couponType"></span>
                      </div>
                 </div>
-
+            </div>
+            <div id="loader" style="display: none;">
+                <div class="spinner-border text-primary" role="status">
+                    <span class="sr-only">Loading...</span>
+                </div>
             </div>
             <div class="mb-5">
                 <h5 class="section-title position-relative text-uppercase mb-3"><span class="bg-secondary pr-3">Payment</span></h5>
@@ -213,8 +217,8 @@
                     </div>
                     <div class="form-group">
                         <div class="custom-control custom-radio">
-                            <input type="radio" class="custom-control-input" name="payment_method" id="directcheck" value="directcheck">
-                            <label class="custom-control-label" for="directcheck">Direct Check</label>
+                            <input type="radio" class="custom-control-input" name="payment_method" id="stripe" value="stripe">
+                            <label class="custom-control-label" for="stripe">Stripe</label>
                         </div>
                     </div>
                     <div class="form-group mb-4">
@@ -224,11 +228,32 @@
                         </div>
                     </div>
                     <button class="btn btn-block btn-primary font-weight-bold py-3" type="submit" id="placeOrderBtn">Place Order</button>
+                     <script src="https://js.stripe.com/v3/"></script>
+                     <div id="card-element-container" style="display: none;">
+                        <div id="card-element"></div>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 </div>
+
+<style>
+    #loader {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        z-index: 99;
+        display: none;
+    }
+
+    #loader .spinner-border {
+        width: 5rem;
+        height: 5rem;
+        border-width: 0.5rem;
+    }
+</style>
 
 @endsection
 
@@ -292,65 +317,139 @@
             updateShippingCharge();
         });
 
-        $('#placeOrderBtn').click(function() {
 
-            var formData = {
-                'name': $('#shipto').is(':checked')? $('#ship_first_name').val() : $('#first_name').val(),
-                'surname': $('#shipto').is(':checked')? $('#ship_last_name').val() : $('#last_name').val(),
-                'email': $('#shipto').is(':checked')? $('#ship_email').val() : $('#email').val(),
-                'phone': $('#shipto').is(':checked')? $('#ship_phone').val() : $('#phone').val(),
-                'house_number': $('#shipto').is(':checked')? $('#ship_house_number').val() : $('#house_number').val(),
-                'street_name': $('#shipto').is(':checked')? $('#ship_street_name').val() : $('#street_name').val(),
-                'town': $('#shipto').is(':checked')? $('#ship_town').val() : $('#town').val(),
-                'postcode': $('#shipto').is(':checked')? $('#ship_postcode').val() : $('#postcode').val(),
-                'address': $('#shipto').is(':checked')? $('#ship_address').val() : $('#address').val(),
-                'delivery_location': $('input[name="delivery_location"]:checked').val(),
-                'payment_method': $('input[name="payment_method"]:checked').val(),
-                'discount_percentage': $('#couponType').text().includes('Percentage') ? $('#couponValue').text() : null,
-                'discount_amount': $('#couponType').text().includes('Fixed Amount') ? $('#couponValue').text() : null,
-                'order_summary': {!! json_encode($cart) !!},
-                '_token': '{{ csrf_token() }}'
-            };
-
-            // console.log(formData);
-
-            $.ajax({
-                url: '{{ route('place.order') }}',
-                type: 'POST',
-                data: formData,
-                success: function(response) {
-                    // console.log(response);
-                    localStorage.removeItem('cart');
-                    updateCartCount();
-                    window.location.href = response.redirectUrl;
-
-                    // swal({
-                    //     text: "Order Placed Successfully. Thank you for shopping with us.",
-                    //     icon: "success",
-                    //     button: {
-                    //         text: "OK",
-                    //         className: "swal-button--confirm"
-                    //     }
-                    // }).then(() => {
-                    //     window.open(response.pdf_url, '_blank');
-                    //     window.location.href = '{{ route('frontend.homepage') }}';
-                    // });
-                },
-                error: function(xhr, status, error) {
-                    if (xhr.status === 422) {
-                        var errors = xhr.responseJSON.errors;
-                        var firstError = Object.values(errors)[0][0];
-                        var errorHtml = '<div class="alert alert-warning"><a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>';
-                        errorHtml += '<b>' + firstError + '</b><br>';
-                        errorHtml += '</div>';
-                        $('#alertContainer').html(errorHtml);
-                        $('html, body').animate({ scrollTop: 100 }, 'smooth');
-                    } else {
-                        console.error(xhr.responseText);
-                    }
+         $.ajaxSetup({
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                 }
             });
-        });
+
+            const stripe = Stripe('pk_test_51N5D0QHyRsekXzKiScNvPKU4rCAVKTJOQm8VoSLk7Mm4AqPPsXwd6NDhbdZGyY4tkqWYBoDJyD0eHLFBqQBfLUBA00tj1hNg3q');
+            const elements = stripe.elements();
+            const cardElement = elements.create('card');
+            cardElement.mount('#card-element');
+
+            $('input[name="payment_method"]').change(function() {
+                if ($('#stripe').is(':checked')) {
+                    $('#card-element-container').show();
+                } else {
+                    $('#card-element-container').hide();
+                }
+            });
+
+            $('#placeOrderBtn').click(async function() {
+                $('#loader').show();
+
+                var formData = {
+                    'name': $('#shipto').is(':checked') ? $('#ship_first_name').val() : $('#first_name').val(),
+                    'surname': $('#shipto').is(':checked') ? $('#ship_last_name').val() : $('#last_name').val(),
+                    'email': $('#shipto').is(':checked') ? $('#ship_email').val() : $('#email').val(),
+                    'phone': $('#shipto').is(':checked') ? $('#ship_phone').val() : $('#phone').val(),
+                    'house_number': $('#shipto').is(':checked') ? $('#ship_house_number').val() : $('#house_number').val(),
+                    'street_name': $('#shipto').is(':checked') ? $('#ship_street_name').val() : $('#street_name').val(),
+                    'town': $('#shipto').is(':checked') ? $('#ship_town').val() : $('#town').val(),
+                    'postcode': $('#shipto').is(':checked') ? $('#ship_postcode').val() : $('#postcode').val(),
+                    'address': $('#shipto').is(':checked') ? $('#ship_address').val() : $('#address').val(),
+                    'delivery_location': $('input[name="delivery_location"]:checked').val(),
+                    'payment_method': $('input[name="payment_method"]:checked').val(),
+                    'discount_percentage': $('#couponType').text().includes('Percentage') ? $('#couponValue').text() : null,
+                    'discount_amount': $('#couponType').text().includes('Fixed Amount') ? $('#couponValue').text() : null,
+                    'order_summary': {!! json_encode($cart) !!},
+                    '_token': '{{ csrf_token() }}'
+                };
+
+                if (formData.payment_method === 'stripe') {
+                    try {
+                        const { paymentMethod, error } = await stripe.createPaymentMethod({
+                            type: 'card',
+                            card: cardElement,
+                            billing_details: {
+                                name: formData.name,
+                                email: formData.email
+                            }
+                        });
+
+                        if (error) {
+                            $('#loader').hide();
+
+                            var errorHtml = '<div class="alert alert-warning"><a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>';
+                            errorHtml += '<b>' + error.message + '</b><br>';
+                            errorHtml += '</div>';
+                            $('#alertContainer').html(errorHtml);
+                            $('html, body').animate({ scrollTop: 100 }, 'smooth');
+                            return;
+                        }
+
+                        formData.payment_method_id = paymentMethod.id;
+                    } catch (error) {
+                        console.error(error);
+                        $('#loader').hide();
+                        return;
+                    }
+                }
+
+                $.ajax({
+                    url: '{{ route('place.order') }}',
+                    type: 'POST',
+                    data: formData,
+                    success: function(response) {
+
+                        swal({
+                            text: "Order Placed Successfully. Thank you for shopping with us.",
+                            icon: "success",
+                            button: {
+                                text: "OK",
+                                className: "swal-button--confirm"
+                            }
+                        }).then(() => {
+                            window.open(response.pdf_url, '_blank');
+                            window.location.href = '{{ route('frontend.homepage') }}';
+                        });
+
+                        if (formData.payment_method === 'stripe') {
+                            stripe.confirmCardPayment(response.client_secret, {
+                                payment_method: formData.payment_method_id
+                            }).then(function(result) {
+                                if (result.error) {
+                                    var errorHtml = '<div class="alert alert-warning"><a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>';
+                                    errorHtml += '<b>' + result.error.message + '</b><br>';
+                                    errorHtml += '</div>';
+                                    $('#alertContainer').html(errorHtml);
+                                    $('html, body').animate({ scrollTop: 100 }, 'smooth');
+                                } else {
+                                    if (result.paymentIntent.status === 'succeeded') {
+                                        localStorage.removeItem('cart');
+                                        updateCartCount();
+                                        window.location.href = response.redirectUrl;
+                                    }
+                                }
+                            }).finally(function() {
+                                $('#loader').hide();
+                            });
+                        } else {
+                            localStorage.removeItem('cart');
+                            updateCartCount();
+                            window.location.href = response.redirectUrl;
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        if (xhr.status === 422) {
+                            var errors = xhr.responseJSON.errors;
+                            var firstError = Object.values(errors)[0][0];
+                            var errorHtml = '<div class="alert alert-warning"><a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>';
+                            errorHtml += '<b>' + firstError + '</b><br>';
+                            errorHtml += '</div>';
+                            $('#alertContainer').html(errorHtml);
+                            $('html, body').animate({ scrollTop: 100 }, 'smooth');
+                        } else {
+                            console.error(xhr.responseText);
+                        }
+                    },
+                    complete: function() {
+                        $('#loader').hide();
+                    }
+                });
+            });
 
         $('#applyCoupon').click(function(e) {
             e.preventDefault();

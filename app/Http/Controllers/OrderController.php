@@ -21,6 +21,8 @@ use Omnipay\Omnipay;
 use App\Models\PaymentGateway;
 use Illuminate\Support\Facades\Log;
 use Exception;
+use Stripe\Stripe;
+use Stripe\PaymentIntent;
 
 class OrderController extends Controller
 {
@@ -88,6 +90,8 @@ class OrderController extends Controller
 
         if ($formData['payment_method'] === 'paypal') {
             return $this->initiatePayPalPayment($netAmount, $formData);
+        }elseif ($formData['payment_method'] === 'stripe') {
+            return $this->initiateStripePayment($netAmount, $formData);
         }
 
         DB::transaction(function () use ($formData, &$pdfUrl, $subtotal, $discountAmount) {
@@ -157,7 +161,9 @@ class OrderController extends Controller
                     $orderDetails->color = $item['color'] ?? null;
                     $orderDetails->price_per_unit = (float) $item['price'] ?? null;
                     $orderDetails->total_price = $totalPrice;
-                    $orderDetails->created_by = auth()->user()->id;
+                    if (auth()->check()) {
+                        $orderDetails->created_by = auth()->user()->id;
+                    }
                     $orderDetails->save();
 
                     $stock = Stock::where('product_id', $item['productId'])
@@ -175,6 +181,157 @@ class OrderController extends Controller
 
         // return redirect($pdfUrl);
         return response()->json(['redirectUrl' => $pdfUrl]);
+    }
+
+    private function initiateStripePayment($netAmount, $formData)
+    {
+        $totalamt = $netAmount;
+        // $stripecommission = $totalamt * 1.5 / 100;
+        // $fixedFee = 0.20;
+        // $amt = $netAmount;
+
+        Stripe::setApiKey(env('STRIPE_SECRET'));
+
+        try {
+            $paymentIntent = PaymentIntent::create([
+                'amount' => $totalamt * 100,
+                'currency' => 'GBP',
+                'payment_method' =>  $formData['payment_method_id'],
+                'description' => 'Order payment',
+                'confirm' => false,
+                'confirmation_method' => 'automatic',
+            ]);
+        } catch (\Exception $e) {
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
+
+        $pdfUrl = null;
+        $subtotal = 0.00;
+
+        foreach ($formData['order_summary'] as $item) {
+            $product = Product::findOrFail($item['productId']);
+            $totalPrice = (float) $item['quantity'] * (float) $product->price;
+
+            if (isset($item['offerId'])) {
+                if ($item['offerId'] == 1) {
+                    $specialOfferDetail = SpecialOfferDetails::where('product_id', $item['productId'])
+                        ->where('status', 1)
+                        ->first();
+                    if ($specialOfferDetail) {
+                        $totalPrice = (float) $item['quantity'] * (float) $specialOfferDetail->offer_price;
+                    }
+                } elseif ($item['offerId'] == 2) {
+                    $flashSellDetail = FlashSellDetails::where('product_id', $item['productId'])
+                        ->where('status', 1)
+                        ->first();
+                    if ($flashSellDetail) {
+                        $totalPrice = (float) $item['quantity'] * (float) $flashSellDetail->flash_sell_price;
+                    }
+                }
+            }
+
+            $subtotal += $totalPrice;
+        }
+
+        $discountAmount = (float) ($formData['discount_amount'] ?? 0.00);
+        $discountPercentage = (float) ($formData['discount_percentage'] ?? 0.00);
+
+        if ($discountPercentage > 0) {
+            $discountAmount = ($subtotal * $discountPercentage) / 100;
+        }
+
+        $netAmount = $subtotal - $discountAmount;
+
+        DB::transaction(function () use ($formData, &$pdfUrl, $subtotal, $discountAmount) {
+            $order = new Order();
+            if (auth()->check()) {
+                $order->user_id = auth()->user()->id;
+            }
+            $order->invoice = random_int(100000, 999999);
+            $order->purchase_date = now()->format('Y-m-d');
+            $order->name = $formData['name'];
+            $order->surname = $formData['surname'];
+            $order->email = $formData['email'];
+            $order->phone = $formData['phone'];
+            $order->house_number = $formData['house_number'];
+            $order->street_name = $formData['street_name'];
+            $order->town = $formData['town'];
+            $order->postcode = $formData['postcode'];
+            $order->address = $formData['address'];
+            $order->payment_method = $formData['payment_method'];
+            $order->shipping_amount = $formData['delivery_location'] === 'insideDhaka' ? 0.00 : 60.00;
+            $order->status = 1;
+            $order->admin_notify = 1;
+            $order->order_type = 0;
+            $order->subtotal_amount = $subtotal;
+            $order->discount_amount = $discountAmount;
+            $order->vat_percent = 0;
+            $order->vat_amount = 0.00;
+            $order->net_amount = $subtotal + $order->vat_amount + $order->shipping_amount - $discountAmount;
+
+            if (auth()->check()) {
+                $order->created_by = auth()->user()->id;
+            }
+
+            $order->save();
+
+            $encoded_order_id = base64_encode($order->id);
+            $pdfUrl = route('generate-pdf', ['encoded_order_id' => $encoded_order_id]);
+
+            if (isset($formData['order_summary']) && is_array($formData['order_summary'])) {
+                foreach ($formData['order_summary'] as $item) {
+                    $product = Product::findOrFail($item['productId']);
+
+                    $totalPrice = (float) $item['quantity'] * (float) $product->price;
+                    if (isset($item['offerId'])) {
+                        if ($item['offerId'] == 1) {
+                            $specialOfferDetail = SpecialOfferDetails::where('product_id', $item['productId'])
+                                ->where('status', 1)
+                                ->first();
+                            if ($specialOfferDetail) {
+                                $totalPrice = (float) $item['quantity'] * (float) $specialOfferDetail->offer_price;
+                            }
+                        } elseif ($item['offerId'] == 2) {
+                            $flashSellDetail = FlashSellDetails::where('product_id', $item['productId'])
+                                ->where('status', 1)
+                                ->first();
+                            if ($flashSellDetail) {
+                                $totalPrice = (float) $item['quantity'] * (float) $flashSellDetail->flash_sell_price;
+                            }
+                        }
+                    }
+
+                    $orderDetails = new OrderDetails();
+                    $orderDetails->order_id = $order->id;
+                    $orderDetails->product_id = $item['productId'];
+                    $orderDetails->quantity = $item['quantity'];
+                    $orderDetails->size = $item['size'] ?? null;
+                    $orderDetails->color = $item['color'] ?? null;
+                    $orderDetails->price_per_unit = (float) $item['price'] ?? null;
+                    $orderDetails->total_price = $totalPrice;
+
+                    if (auth()->check()) {
+                        $orderDetails->created_by = auth()->user()->id;
+                    }
+                    $orderDetails->save();
+
+                    $stock = Stock::where('product_id', $item['productId'])
+                        ->where('size', $item['size'])
+                        ->where('color', $item['color'])
+                        ->first();
+
+                    if ($stock) {
+                        $stock->quantity -= $item['quantity'];
+                        $stock->save();
+                    }
+                }
+            }
+        });
+
+        return response()->json([
+            'client_secret' => $paymentIntent->client_secret,
+            'redirectUrl' => $pdfUrl
+        ]);
     }
 
     protected function getPayPalCredentials()
@@ -320,7 +477,9 @@ class OrderController extends Controller
                     $orderDetails->color = $item['color']?? null;
                     $orderDetails->price_per_unit = (float) $item['price']?? null;
                     $orderDetails->total_price = $totalPrice;
-                    $orderDetails->created_by = auth()->user()->id;
+                    if (auth()->check()) {
+                        $orderDetails->created_by = auth()->user()->id;
+                    }
                     $orderDetails->save();
 
                     $stock = Stock::where('product_id', $item['productId'])
