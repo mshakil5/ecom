@@ -346,6 +346,10 @@
                     alert(response.message);
                     var pdfUrl = response.pdf_url;
                     window.location.href = pdfUrl;
+
+                    setTimeout(function() {
+                        location.reload();
+                    }, 1000);
                 },
                 error: function(xhr) {
                     console.log(xhr.responseText);
