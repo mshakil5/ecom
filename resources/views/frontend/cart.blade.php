@@ -33,8 +33,9 @@
                             @php
                                 $product = \App\Models\Product::find($item['productId']);
                                 $price = $item['price'];
+                                $stock = $product->stock->quantity;
                             @endphp
-                            <tr data-product-id="{{ $product->id }}">
+                            <tr data-product-id="{{ $product->id }}" data-stock="{{ $stock }}">
                                 <td class="align-middle">
                                     <div class="d-flex align-items-center">
                                         <img src="{{ asset('/images/products/' . $product->feature_image) }}" alt="Product Image" style="width: 50px; height: 50px; object-fit: contain;">
@@ -131,24 +132,28 @@
         $(document).on('click', '.btn-plus', function() {
             let input = $(this).closest('.quantity').find('.quantity-input');
             let currentValue = parseInt(input.val());
-            let newValue = currentValue + 1;
-            let newValue1 = newValue - 1;
-            input.val(newValue1); 
-            let productId = $(this).closest('tr').data('product-id');
-            updateLocalStorage(productId, newValue1);
-            updateCartTotal();
-            updateHiddenInputCart(); 
+            let row = $(this).closest('tr'); 
+            let stock = parseInt(row.data('stock'));
+            let newValue = Math.min(currentValue, stock);
+
+            if (newValue <= stock) {
+                input.val(newValue);
+
+                let productId = row.data('product-id'); 
+                updateLocalStorage(productId, newValue);
+                updateCartTotal();
+                updateHiddenInputCart();
+            }
         });
 
 
         $(document).on('click', '.btn-minus', function() {
             let input = $(this).closest('.quantity').find('.quantity-input');
             let currentValue = parseInt(input.val());
-            let newValue = currentValue - 1;
-            let newValue1 = Math.max(newValue + 1, 1); 
-            input.val(newValue1); 
+            let newValue = Math.max(currentValue, 1); 
+            input.val(newValue); 
             let productId = $(this).closest('tr').data('product-id');
-            updateLocalStorage(productId, newValue1);
+            updateLocalStorage(productId, newValue);
             updateCartTotal();
             updateHiddenInputCart(); 
         });

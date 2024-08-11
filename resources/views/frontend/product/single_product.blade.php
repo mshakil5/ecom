@@ -120,6 +120,7 @@
                     </div>
 
                     <input type="text" class="form-control bg-secondary border-0 text-center" value="1" id="quantityInput" readonly min="1">
+                    <input type="hidden" id="maxQuantity" value="{{ $product->stock->quantity }}">
 
                     <div class="input-group-btn">
                         <button class="btn btn-primary" id="incrementBtn">
@@ -297,8 +298,12 @@
             }
         });
 
+        const maxQuantity = parseInt($('#maxQuantity').val());
         $('#incrementBtn').click(function() {
-            currentValue++; 
+            if (currentValue < maxQuantity) {
+                currentValue++; 
+                $('#quantityInput').val(currentValue);
+            }
             $('#quantityInput').val(currentValue);
         });
     });
