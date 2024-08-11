@@ -190,8 +190,16 @@
                     'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                 },
                 success: function(response) {
-                    alert(response.message);
-                    console.log(response);
+                    swal({
+                        text: "Returned Successfully",
+                        icon: "success",
+                        button: {
+                            text: "OK",
+                            className: "swal-button--confirm"
+                        }
+                    }).then(() => {
+                        location.reload();
+                    });
                 },
                 error: function(xhr) {
                     console.log(xhr.responseText);

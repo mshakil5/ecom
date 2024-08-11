@@ -391,8 +391,16 @@
                     if (d.status == 400) {
                         $(".ermsg").html(d.message);
                     }else if(d.status == 300){
-                        $(".ermsg").html(d.message);
-                        window.setTimeout(function(){location.reload()},2000)
+                        swal({
+                            text: "Product Created",
+                            icon: "success",
+                            button: {
+                                text: "OK",
+                                className: "swal-button--confirm"
+                            }
+                        }).then(() => {
+                            location.reload();
+                        });
                     }
                 },
                 error: function(xhr, status, error) {
@@ -473,8 +481,16 @@
                           $(".ermsg").html(d.message);
                           pagetop();
                       }else if(d.status == 300){
-                          $(".ermsg").html(d.message);
-                          window.setTimeout(function(){location.reload()},2000)
+                          swal({
+                            text: "Product Updated",
+                            icon: "success",
+                            button: {
+                                text: "OK",
+                                className: "swal-button--confirm"
+                            }
+                        }).then(() => {
+                            location.reload();
+                        });
                       }
                   },
                   error: function(xhr, status, error) {

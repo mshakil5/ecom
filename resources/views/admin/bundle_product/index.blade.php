@@ -352,8 +352,16 @@
                     processData: false,
                     data: formData,
                     success: function (response) {
-                        alert(response.message);
-                        console.log(response);
+                        swal({
+                            text: "Created Successfully",
+                            icon: "success",
+                            button: {
+                                text: "OK",
+                                className: "swal-button--confirm"
+                            }
+                        }).then(() => {
+                            location.reload();
+                        });
                     },
                     error: function(xhr, status, error) {
                         console.error(xhr.responseText);
@@ -394,8 +402,16 @@
                     processData: false,
                     data: formData,
                     success: function (response) {
-                        alert(response.message);
-                        console.log(response);
+                        swal({
+                            text: "Updated Successfully",
+                            icon: "success",
+                            button: {
+                                text: "OK",
+                                className: "swal-button--confirm"
+                            }
+                        }).then(() => {
+                            location.reload();
+                        });
                     },
                     error: function(xhr, status, error) {
                         console.error(xhr.responseText);

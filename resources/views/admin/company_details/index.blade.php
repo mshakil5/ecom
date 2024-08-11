@@ -308,10 +308,16 @@
                     if (response.status == 303) {
                         $(".ermsg").html(response.message);
                     } else if (response.status == 300) {
-                        $(".ermsg").html(response.message);
-                        // setTimeout(function(){
-                        //     location.reload();
-                        // }, 2000);
+                        swal({
+                            text: "Updated Successfully",
+                            icon: "success",
+                            button: {
+                                text: "OK",
+                                className: "swal-button--confirm"
+                            }
+                        }).then(() => {
+                            location.reload();
+                        });
                     }
                 },
                 error: function(xhr, status, error) {

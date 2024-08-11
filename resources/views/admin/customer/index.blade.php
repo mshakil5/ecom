@@ -207,18 +207,17 @@
                     }else if(d.status == 300){
 
                       $(function() {
-                          var Toast = Swal.mixin({
-                            toast: true,
-                            position: 'top-end',
-                            showConfirmButton: false,
-                            timer: 3000
-                          });
-                          Toast.fire({
-                            icon: 'success',
-                            title: 'Data create successfully.'
+                          swal({
+                              text: "Created Successfully",
+                              icon: "success",
+                              button: {
+                                  text: "OK",
+                                  className: "swal-button--confirm"
+                              }
+                          }).then(() => {
+                              location.reload();
                           });
                         });
-                      window.setTimeout(function(){location.reload()},2000)
                     }
                 },
                 error: function (d) {
@@ -252,15 +251,15 @@
                           pagetop();
                       }else if(d.status == 300){
                         $(function() {
-                          var Toast = Swal.mixin({
-                            toast: true,
-                            position: 'top-end',
-                            showConfirmButton: false,
-                            timer: 3000
-                          });
-                          Toast.fire({
-                            icon: 'success',
-                            title: 'Data updated successfully.'
+                          swal({
+                              text: "Updated Successfully",
+                              icon: "success",
+                              button: {
+                                  text: "OK",
+                                  className: "swal-button--confirm"
+                              }
+                          }).then(() => {
+                              location.reload();
                           });
                         });
                           window.setTimeout(function(){location.reload()},2000)

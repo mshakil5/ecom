@@ -280,10 +280,16 @@
                 processData: false,
                 contentType: false,
                 success: function(response) {
-                    alert('Flash sell updated successfully!');
-                    $('#flashSellForm')[0].reset();
-                    $('#productTableBody').empty();
-                    $('#preview').attr('src', '').hide();
+                    swal({
+                        text: "Updated Successfully",
+                        icon: "success",
+                        button: {
+                            text: "OK",
+                            className: "swal-button--confirm"
+                        }
+                    }).then(() => {
+                        location.reload();
+                    });
                 },
                 error: function(xhr) {
                     console.log(xhr.responseText);

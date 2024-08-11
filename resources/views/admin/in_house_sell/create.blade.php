@@ -343,13 +343,20 @@
                 data: formData,
                 dataType: 'json',
                 success: function(response) {
-                    alert(response.message);
-                    var pdfUrl = response.pdf_url;
-                    window.location.href = pdfUrl;
+                    swal({
+                        text: "Created Successfully",
+                        icon: "success",
+                        button: {
+                            text: "OK",
+                            className: "swal-button--confirm"
+                        }
+                    }).then(() => {
+                        window.location.href = response.pdf_url;
 
-                    setTimeout(function() {
-                        location.reload();
-                    }, 1000);
+                        setTimeout(function() {
+                            location.reload();
+                        }, 1000);
+                    });
                 },
                 error: function(xhr) {
                     console.log(xhr.responseText);

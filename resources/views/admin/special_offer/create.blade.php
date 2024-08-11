@@ -266,10 +266,16 @@
                 processData: false,
                 contentType: false,
                 success: function(response) {
-                    alert('Offer created successfully!');
-                    $('#createThisForm')[0].reset();
-                    $('#productTable tbody').empty();
-                    $('#preview').attr('src', '').hide();
+                    swal({
+                        text: "Created Successfully",
+                        icon: "success",
+                        button: {
+                            text: "OK",
+                            className: "swal-button--confirm"
+                        }
+                    }).then(() => {
+                        location.reload();
+                    });
                 },
                 error: function(xhr) {
                     console.log(xhr.responseText);

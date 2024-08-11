@@ -192,20 +192,16 @@
                     if (d.status == 303) {
                         $(".ermsg").html(d.message);
                     }else if(d.status == 300){
-
-                      $(function() {
-                          var Toast = Swal.mixin({
-                            toast: true,
-                            position: 'top-end',
-                            showConfirmButton: false,
-                            timer: 3000
-                          });
-                          Toast.fire({
-                            icon: 'success',
-                            title: 'Data create successfully.'
-                          });
+                      swal({
+                            text: "Created Successfully",
+                            icon: "success",
+                            button: {
+                                text: "OK",
+                                className: "swal-button--confirm"
+                            }
+                        }).then(() => {
+                            location.reload();
                         });
-                      window.setTimeout(function(){location.reload()},2000)
                     }
                 },
                 error: function(xhr, status, error) {
@@ -240,19 +236,16 @@
                           $(".ermsg").html(d.message);
                           pagetop();
                       }else if(d.status == 300){
-                        $(function() {
-                          var Toast = Swal.mixin({
-                            toast: true,
-                            position: 'top-end',
-                            showConfirmButton: false,
-                            timer: 3000
-                          });
-                          Toast.fire({
-                            icon: 'success',
-                            title: 'Data updated successfully.'
-                          });
-                        });
-                          window.setTimeout(function(){location.reload()},2000)
+                        swal({
+                            text: "Updated Successfully",
+                            icon: "success",
+                            button: {
+                                text: "OK",
+                                className: "swal-button--confirm"
+                            }
+                        }).then(() => {
+                            location.reload();
+                        });  
                       }
                   },
                   error:function(d){
