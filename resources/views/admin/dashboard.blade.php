@@ -105,7 +105,7 @@
       </div>
       
       <div class="row">
-          <section class="col-lg-7 connectedSortable">
+          <section class="col-lg-12 connectedSortable">
               <div class="card">
                   <div class="card-header">
                       <h3 class="card-title">
@@ -150,7 +150,11 @@
                                       <label for="todoCheck{{ $order->id }}"></label>
                                   </div>
                                   <span class="text">
-                                      <span style="color: #007bff; font-weight: bold;">{{ $user->name }}</span> has ordered a new item.
+                                      @if(!empty($user->name))
+                                  <span style="color: #007bff; font-weight: bold;">{{ $user->name }}</span> has ordered a new item.
+                                      @else
+                                          A new item has been ordered.
+                                      @endif
                                       <span style="color: #28a745; font-weight: bold;">Net Amount: ${{ number_format($order->net_amount, 2) }}</span>
                                   </span>
 

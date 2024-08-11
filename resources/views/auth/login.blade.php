@@ -9,16 +9,16 @@
     <div class="d-flex justify-content-center align-items-center" style="min-height: 50px;">
         <div class="col-lg-5 mb-5">
             <div class="contact-form bg-light p-30">
-                @if (isset($message))
+                @if (session('message'))
                     <div class="alert alert-danger" role="alert">
-                        {{ $message }}
+                        {{ session('message') }}
                     </div>
                 @endif
                 <form name="loginForm" id="loginForm" method="POST" action="{{ route('login') }}">
                     @csrf
                     <div class="control-group">
-                        <input type="email" class="form-control" id="email" name="email" placeholder="Your Email"
-                            required />
+                        <input class="form-control" id="email" name="email" placeholder="Your Email or Phone Number"
+                            value="{{ old('email') }}" required />
                         <p class="help-block text-danger"></p>
                     </div>
                     <div class="control-group">

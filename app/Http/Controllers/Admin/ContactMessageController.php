@@ -11,6 +11,6 @@ class ContactMessageController extends Controller
     public function getMessaege()
     {
         $messages = Contact::orderby('id','DESC')->get();
-        return view('admin.contactMessage.index' , compact('messages'));
+        return view('admin.contact_message.index' , compact('messages'));
     }
 }
