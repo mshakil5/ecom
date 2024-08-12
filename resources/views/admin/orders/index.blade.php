@@ -152,7 +152,16 @@
                 },
                 success: function(response) {
                     // console.log(response);
-                    alert('Delivery man assigned successfully!');
+                    swal({
+                        text: "Status changed",
+                        icon: "success",
+                        button: {
+                            text: "OK",
+                            className: "swal-button--confirm"
+                        }
+                    }).then(() => {
+                        location.reload();
+                    });
                 },
                 error: function(xhr, status, error) {
                     console.log(xhr.responseText);
