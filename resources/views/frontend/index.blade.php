@@ -102,15 +102,15 @@
             @if($section_status->categories == 1)
                 <div class="col-lg-4">
                     <!-- Categories Start -->
-                            @foreach($categories as $category)
-                                <div class="product-offer mb-30" style="height: 200px;">
-                                    <x-image-with-loader class="img-fluid" src="{{ asset('images/category/' . $category->image) }}" alt=""/>
-                                    <div class="offer-text">
-                                        <h3 class="text-white mb-3">{{ $category->name }}</h3>
-                                        <a href="{{ route('category.show', $category->slug) }}" class="btn btn-primary">Shop Now</a>
-                                    </div>
+                        @foreach($categories as $category)
+                            <div class="product-offer mb-30" style="height: 200px;">
+                                <x-image-with-loader class="img-fluid" src="{{ asset('images/category/' . $category->image) }}" alt=""/>
+                                <div class="offer-text">
+                                    <h3 class="text-white mb-3">{{ $category->name }}</h3>
+                                    <a href="{{ route('category.show', $category->slug) }}" class="btn btn-primary">Shop Now</a>
                                 </div>
-                            @endforeach
+                            </div>
+                        @endforeach
                     <!-- Categories End -->
                 </div>
             @endif

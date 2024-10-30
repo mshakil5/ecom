@@ -26,12 +26,14 @@ class FrontendController extends Controller
     public function index()
     {
         $currency = CompanyDetails::value('currency');
+
         $specialOffers = SpecialOffer::select('offer_image', 'offer_name', 'offer_title', 'slug')
             ->where('status', 1)
             ->whereDate('start_date', '<=', now())
             ->whereDate('end_date', '>=', now())
             ->latest()
             ->get();
+
         $flashSells = FlashSell::select('flash_sell_image', 'flash_sell_name', 'flash_sell_title', 'slug')
             ->where('status', 1)
             ->whereDate('start_date', '<=', now())
@@ -96,6 +98,7 @@ class FrontendController extends Controller
         });
 
         $section_status = SectionStatus::first();
+        
         $advertisements = Ad::where('status', 1)->select('type', 'link', 'image')->get();
 
         $suppliers = Supplier::orderBy('id', 'desc')
