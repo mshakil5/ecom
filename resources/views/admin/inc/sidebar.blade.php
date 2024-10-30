@@ -10,8 +10,8 @@
         </li>
 
         <!-- Products -->
-        <li class="nav-item dropdown {{ (request()->is('admin/category*') || request()->is('admin/brand*') || request()->is('admin/model*') || request()->is('admin/unit*') || request()->is('admin/group*') || request()->is('admin/product*') || request()->is('admin/bundle-product*') || request()->is('admin/sub-category*')) ? 'menu-open' : '' }}">
-            <a href="#" class="nav-link dropdown-toggle {{ (request()->is('admin/category*') || request()->is('admin/brand*') || request()->is('admin/model*') || request()->is('admin/unit*') || request()->is('admin/group*') || request()->is('admin/product') || request()->is('admin/bundle-product*') || request()->is('admin/sub-category*')) ? 'active' : '' }}">
+        <li class="nav-item dropdown {{ (request()->is('admin/category*') || request()->is('admin/brand*') || request()->is('admin/model*') || request()->is('admin/unit*') || request()->is('admin/group*') || request()->is('admin/sub-sub-category*') || request()->is('admin/product*') || request()->is('admin/bundle-product*') || request()->is('admin/sub-category*')) ? 'menu-open' : '' }}">
+            <a href="#" class="nav-link dropdown-toggle {{ (request()->is('admin/category*') || request()->is('admin/brand*') || request()->is('admin/model*') || request()->is('admin/unit*') || request()->is('admin/group*') || request()->is('admin/sub-sub-category*') || request()->is('admin/product') || request()->is('admin/bundle-product*') || request()->is('admin/sub-category*')) ? 'active' : '' }}">
                 <i class="nav-icon fas fa-clipboard-list"></i>
                 <p>
                     All Products<i class="fas fa-angle-left right"></i>
@@ -34,6 +34,12 @@
                     <a href="{{ route('allsubcategory') }}" class="nav-link {{ (request()->is('admin/sub-category*')) ? 'active' : '' }}">
                         <i class="far fa-folder nav-icon"></i>
                         <p>Sub Categories</p>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="{{ route('allsubsubcategory') }}" class="nav-link {{ (request()->is('admin/sub-sub-category*')) ? 'active' : '' }}">
+                        <i class="far fa-folder-open nav-icon"></i>
+                        <p>Sub Sub Categories</p>
                     </a>
                 </li>
                 <li class="nav-item">

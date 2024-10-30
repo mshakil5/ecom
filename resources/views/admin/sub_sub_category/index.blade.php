@@ -2,115 +2,116 @@
 
 @section('content')
 
-<!-- Main content -->
-<section class="content" id="newBtnSection">
-    <div class="container-fluid">
-      <div class="row">
-        <div class="col-2">
-            <button type="button" class="btn btn-secondary my-3" id="newBtn">Add new</button>
-        </div>
-      </div>
-    </div>
-</section>
-<!-- /.content -->
-
-
-<section class="content mt-3" id="addThisFormContainer">
-    <div class="container-fluid">
-        <div class="row justify-content-md-center">
-            <div class="col-md-8">
-                <div class="card card-secondary">
-                    <div class="card-header">
-                        <h3 class="card-title"  id="cardTitle">Add new data</h3>
-                    </div>
-                    <div class="card-body">
-                        <div class="ermsg"></div>
-                        <form id="createThisForm">
-                            @csrf
-                            <input type="hidden" class="form-control" id="codeid" name="codeid">
-                            <div class="row">
-                                <div class="col-sm-12">
-                                    <div class="form-group">
-                                        <label>Name</label>
-                                        <input type="text" class="form-control" id="name" name="name" placeholder="Enter brand name">
-                                    </div>
-                                </div>
-                                <div class="col-sm-12">
-                                    <div class="form-group">
-                                        <label>Description</label>
-                                        <textarea class="form-control" id="description" name="description" rows="3" placeholder="Enter description"></textarea>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="col-10">
-                                    <div class="form-group">
-                                        <label for="feature-img">Category Image</label>
-                                        <input type="file" class="form-control-file" id="image" accept="image/*">
-                                        <img id="preview-image" src="#" alt="" style="max-width: 300px; width: 100%; height: auto; margin-top: 20px;">
-                                    </div>
-                                </div>
-                            </div>
-                        </form>
-                    </div>
-                    <div class="card-footer">
-                        <button type="submit" id="addBtn" class="btn btn-secondary" value="Create">Create</button>
-                        <button type="submit" id="FormCloseBtn" class="btn btn-default">Cancel</button>
-                    </div>
+    <section class="content" id="newBtnSection">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-2">
+                    <button type="button" class="btn btn-secondary my-3" id="newBtn">Add new</button>
                 </div>
             </div>
         </div>
-    </div>
-</section>
+    </section>
+    <!-- /.content -->
 
-<section class="content" id="contentContainer">
-    <div class="container-fluid">
-        <div class="row">
-            <div class="col-12">
-                <div class="card card-secondary">
-                    <div class="card-header">
-                        <h3 class="card-title">All Data</h3>
-                    </div>
-                    <div class="card-body">
-                        <table id="example1" class="table table-bordered table-striped">
-                            <thead>
-                                <tr>
-                                    <th>Sl</th>
-                                    <th>Name</th>
-                                    <th>Status</th>
-                                    <th>Action</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach ($data as $key => $data)
-                                <tr>
-                                    <td>{{ $key + 1 }}</td>
-                                    <td>{{ $data->name }}</td>
-                                    <td>
-                                        <div class="custom-control custom-switch">
-                                            <input type="checkbox" class="custom-control-input toggle-status" id="customSwitchStatus{{ $data->id }}" data-id="{{ $data->id }}" {{ $data->status == 1 ? 'checked' : '' }}>
-                                            <label class="custom-control-label" for="customSwitchStatus{{ $data->id }}"></label>
+    <section class="content mt-3" id="addThisFormContainer">
+        <div class="container-fluid">
+            <div class="row justify-content-md-center">
+                <div class="col-md-8">
+                    <div class="card card-secondary">
+                        <div class="card-header">
+                            <h3 class="card-title" id="cardTitle">Add new data</h3>
+                        </div>
+                        <div class="card-body">
+                            <div class="ermsg"></div>
+                            <form id="createThisForm">
+                                @csrf
+                                <input type="hidden" class="form-control" id="codeid" name="codeid">
+                                <div class="row">
+                                    <div class="col-sm-12">
+                                        <div class="form-group">
+                                            <label>Sub Category</label>
+                                            <select class="form-control" id="sub_category_id" name="sub_category_id">
+                                                <option value="">Select Sub Category</option>
+                                                @foreach ($subCategories as $subCategory)
+                                                    <option value="{{ $subCategory->id }}">{{ $subCategory->name }}</option>
+                                                @endforeach
+                                            </select>
                                         </div>
-                                    </td>
-                                    <td>
-                                        <a id="EditBtn" rid="{{ $data->id }}">
-                                            <i class="fa fa-edit" style="color: #2196f3; font-size:16px;"></i>
-                                        </a>
-                                        <a id="deleteBtn" rid="{{ $data->id }}">
-                                            <i class="fa fa-trash-o" style="color: red; font-size:16px;"></i>
-                                        </a>
-                                    </td>
-                                </tr>
-                                @endforeach
-                            </tbody>
-                        </table>
+                                    </div>
+                                    <div class="col-sm-12">
+                                        <div class="form-group">
+                                            <label>Sub Sub Category Name</label>
+                                            <input type="text" class="form-control" id="name" name="name" placeholder="Enter subcategory name">
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-12">
+                                        <div class="form-group">
+                                            <label>Sub Sub Category Description</label>
+                                            <textarea class="form-control" id="description" name="description" rows="3" placeholder="Enter description"></textarea>
+                                        </div>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                        <div class="card-footer">
+                            <button type="submit" id="addBtn" class="btn btn-secondary" value="Create">Create</button>
+                            <button type="submit" id="FormCloseBtn" class="btn btn-default">Cancel</button>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
-</section>
+    </section>
 
+    <section class="content" id="contentContainer">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-12">
+                    <div class="card card-secondary">
+                        <div class="card-header">
+                            <h3 class="card-title">All Data</h3>
+                        </div>
+                        <div class="card-body">
+                            <table id="example1" class="table table-bordered table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>Sl</th>
+                                        <th>SubCategory</th>
+                                        <th>Sub Sub Category</th>
+                                        <th>Status</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach ($data as $key => $item)
+                                        <tr>
+                                            <td>{{ $key + 1 }}</td>
+                                            <td>{{ $item->subCategory->name }}</td>
+                                            <td>{{ $item->name }}</td>
+                                            <td>
+                                                <div class="custom-control custom-switch">
+                                                    <input type="checkbox" class="custom-control-input toggle-status" id="customSwitchStatus{{ $item->id }}" data-id="{{ $item->id }}" {{ $item->status == 1 ? 'checked' : '' }}>
+                                                    <label class="custom-control-label" for="customSwitchStatus{{ $item->id }}"></label>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <a id="EditBtn" rid="{{ $item->id }}">
+                                                    <i class="fa fa-edit" style="color: #2196f3; font-size:16px;"></i>
+                                                </a>
+                                                <a id="deleteBtn" rid="{{ $item->id }}">
+                                                    <i class="fa fa-trash-o" style="color: red; font-size:16px;"></i>
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
 
 @endsection
 
@@ -128,14 +129,14 @@
 <script>
     $(document).ready(function() {
         $('.toggle-status').change(function() {
-            var category_id = $(this).data('id');
+            var sub_category_id = $(this).data('id');
             var status = $(this).prop('checked') ? 1 : 0;
 
             $.ajax({
-                url: '/admin/category-status',
+                url: '/admin/sub-sub-category-status',
                 method: "POST",
                 data: {
-                    category_id: category_id,
+                    sub_category_id: sub_category_id,
                     status: status,
                     _token: "{{ csrf_token() }}"
                 },
@@ -174,8 +175,8 @@
 
       $.ajaxSetup({ headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') } });
       //
-      var url = "{{URL::to('/admin/category')}}";
-      var upurl = "{{URL::to('/admin/category-update')}}";
+      var url = "{{URL::to('/admin/sub-sub-category')}}";
+      var upurl = "{{URL::to('/admin/sub-sub-category-update')}}";
 
       $("#addBtn").click(function(){
 
@@ -183,12 +184,8 @@
           if($(this).val() == 'Create') {
               var form_data = new FormData();
               form_data.append("name", $("#name").val());
+              form_data.append("sub_category_id", $("#sub_category_id").val());
               form_data.append("description", $("#description").val());
-
-              var featureImgInput = document.getElementById('image');
-                if(featureImgInput.files && featureImgInput.files[0]) {
-                    form_data.append("image", featureImgInput.files[0]);
-                }
 
               $.ajax({
                 url: url,
@@ -201,7 +198,7 @@
                         $(".ermsg").html(d.message);
                     }else if(d.status == 300){
                         swal({
-                            text: "Category Created",
+                            text: "Created Successfully",
                             icon: "success",
                             button: {
                                 text: "OK",
@@ -223,12 +220,8 @@
           if($(this).val() == 'Update'){
               var form_data = new FormData();
               form_data.append("name", $("#name").val());
+              form_data.append("sub_category_id", $("#sub_category_id").val());
               form_data.append("description", $("#description").val());
-
-              var featureImgInput = document.getElementById('image');
-                if(featureImgInput.files && featureImgInput.files[0]) {
-                    form_data.append("image", featureImgInput.files[0]);
-                }
 
               form_data.append("codeid", $("#codeid").val());
               
@@ -246,7 +239,7 @@
                           pagetop();
                       }else if(d.status == 300){
                           swal({
-                            text: "Category Updated",
+                            text: "Updated Successfully",
                             icon: "success",
                             button: {
                                 text: "OK",
@@ -310,40 +303,21 @@
       function populateForm(data){
           $("#name").val(data.name);
           $("#description").val(data.description);
+          $("#sub_category_id").val(data.sub_category_id);
           $("#codeid").val(data.id);
           $("#addBtn").val('Update');
           $("#addBtn").html('Update');
           $("#addThisFormContainer").show(300);
           $("#newBtn").hide(100);
 
-          var featureImagePreview = document.getElementById('preview-image');
-            if (data.image) { 
-                featureImagePreview.src = '/images/category/' + data.image;
-            } else {
-                featureImagePreview.src = "#";
-            }
-
       }
       function clearform(){
           $('#createThisForm')[0].reset();
           $("#addBtn").val('Create');
           $("#addBtn").html('Create');
-          $('#preview-image').attr('src', '#');
           $("#cardTitle").text('Add new data');
       }
   });
-</script>
-
-<script>
-    $(document).ready(function(){
-        $("#image").change(function(e){
-            var reader = new FileReader();
-            reader.onload = function(e){
-                $("#preview-image").attr("src", e.target.result);
-            };
-            reader.readAsDataURL(this.files[0]);
-        });
-    });
 </script>
 
 @endsection

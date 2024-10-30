@@ -31,6 +31,7 @@ use App\Http\Controllers\Admin\RoleController;
 use App\Http\Controllers\Admin\SubCategoryController;
 use App\Http\Controllers\Admin\PaymentGatewayController;
 use App\Http\Controllers\Admin\MailContentController;
+use App\Http\Controllers\Admin\SubSubCategoryController;
 
 
 Route::group(['prefix' =>'admin/', 'middleware' => ['auth', 'is_admin']], function(){
@@ -121,6 +122,15 @@ Route::group(['prefix' =>'admin/', 'middleware' => ['auth', 'is_admin']], functi
     Route::get('/sub-category/{id}', [SubCategoryController::class, 'subCategoryDelete']);
 
     Route::post('/sub-category-status', [SubCategoryController::class, 'toggleStatus']);
+
+    // Sub Sub-Category crud
+    Route::get('/sub-sub-category', [SubSubCategoryController::class, 'index'])->name('allsubsubcategory');
+    Route::post('/sub-sub-category', [SubSubCategoryController::class, 'store']);
+    Route::get('/sub-sub-category/{id}/edit', [SubSubCategoryController::class, 'edit']);
+    Route::post('/sub-sub-category-update', [SubSubCategoryController::class, 'update']);
+    Route::get('/sub-sub-category/{id}', [SubSubCategoryController::class, 'delete']);
+
+    Route::post('/sub-sub-category-status', [SubSubCategoryController::class, 'toggleStatus']);
 
     // Product crud
     Route::get('/product', [ProductController::class, 'getProduct'])->name('allproduct');

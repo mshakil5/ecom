@@ -5,22 +5,17 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class SubCategory extends Model
+class SubSubCategory extends Model
 {
     use HasFactory;
 
-    public function category()
+    public function subCategory()
     {
-        return $this->belongsTo(Category::class);
+        return $this->belongsTo(SubCategory::class);
     }
 
     public function products()
     {
         return $this->hasMany(Product::class);
-    }
-
-    public function subSubCategories()
-    {
-        return $this->hasMany(SubSubCategory::class);
     }
 }
