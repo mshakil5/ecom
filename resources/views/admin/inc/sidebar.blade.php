@@ -136,20 +136,14 @@
         </li>
 
         <!-- Stock -->
-        <li class="nav-item dropdown {{ (request()->is('admin/stock*') || request()->is('admin/product-purchase-history*') || request()->is('admin/add-stock*') || request()->is('admin/stock-return-history*') || request()->is('admin/system-losses*') || request()->routeIs('purchase.edit') || request()->routeIs('returnProduct') || request()->routeIs('allsupplier') || request()->routeIs('system-losses.index')) ? 'menu-open' : '' }}">
-            <a href="#" class="nav-link dropdown-toggle {{ (request()->is('admin/stock*') || request()->is('admin/product-purchase-history*') || request()->is('admin/add-stock*') || request()->is('admin/stock-return-history*') || request()->is('admin/system-losses*') || request()->routeIs('purchase.edit') || request()->routeIs('allsupplier') || request()->routeIs('returnProduct') || request()->routeIs('system-losses.index')) ? 'active' : '' }}">
+        <li class="nav-item dropdown {{ (request()->is('admin/stock*') || request()->is('admin/product-purchase-history*') || request()->is('admin/add-stock*') || request()->is('admin/stock-return-history*') || request()->is('admin/system-losses*') || request()->routeIs('purchase.edit') || request()->routeIs('returnProduct') || request()->routeIs('system-losses.index')) ? 'menu-open' : '' }}">
+            <a href="#" class="nav-link dropdown-toggle {{ (request()->is('admin/stock*') || request()->is('admin/product-purchase-history*') || request()->is('admin/add-stock*') || request()->is('admin/stock-return-history*') || request()->is('admin/system-losses*') || request()->routeIs('purchase.edit') || request()->routeIs('returnProduct') || request()->routeIs('system-losses.index')) ? 'active' : '' }}">
                 <i class="nav-icon fas fa-warehouse"></i>
                 <p>
                     Stocks <i class="fas fa-angle-left right"></i>
                 </p>
             </a>
             <ul class="nav nav-treeview">
-                <li class="nav-item">
-                    <a href="{{ route('allsupplier') }}" class="nav-link {{ (request()->is('admin/supplier*')) ? 'active' : '' }}">
-                    <i class="nav-icon fas fa-truck"></i>
-                        <p>Supplier</p>
-                    </a>
-                </li>
                 <li class="nav-item">
                     <a href="{{ route('addStock') }}" class="nav-link {{ (request()->is('admin/add-stock*')) ? 'active' : '' }}">
                         <i class="fas fa-shopping-cart nav-icon"></i>
@@ -181,6 +175,20 @@
                     </a>
                 </li>
             </ul>
+        </li>
+
+        <li class="nav-item">
+            <a href="{{ route('allsupplier') }}" class="nav-link {{ (request()->is('admin/supplier*')) ? 'active' : '' }}">
+            <i class="nav-icon fas fa-truck"></i>
+                <p>Supplier</p>
+            </a>
+        </li>
+
+        <li class="nav-item">
+            <a href="{{ route('allcustomer') }}" class="nav-link {{ (request()->is('admin/new-customer*')) ? 'active' : '' }}">
+                <i class="nav-icon fas fa-user"></i>
+                <p>Customers</p>
+            </a>
         </li>
 
         <!-- Special Offers -->
@@ -276,7 +284,6 @@
         <!-- Settings -->
         <li class="nav-item mb-5 {{ 
             request()->is('admin/new-admin') ||
-            request()->is('admin/new-customer') ||
             request()->is('admin/role') ||
             request()->is('admin/slider') ||
             request()->is('admin/company-details') ||
@@ -292,7 +299,6 @@
             <a href="#" class="nav-link dropdown-toggle {{ 
                 (request()->is('admin/new-admin*')|| 
                 request()->is('admin/role*')||
-                request()->is('admin/new-customer*')||
                 request()->is('admin/slider*')||
                 request()->is('admin/company-details*')||
                 request()->is('admin/contact-email*')||
@@ -314,12 +320,6 @@
                     <a href="{{ route('alladmin') }}" class="nav-link {{ (request()->is('admin/new-admin*')) ? 'active' : '' }}">
                         <i class="nav-icon fas fa-user-shield"></i>
                         <p>Admins</p>
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="{{ route('allcustomer') }}" class="nav-link {{ (request()->is('admin/new-customer*')) ? 'active' : '' }}">
-                        <i class="nav-icon fas fa-user"></i>
-                        <p>Customers</p>
                     </a>
                 </li>
                 

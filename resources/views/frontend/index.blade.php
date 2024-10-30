@@ -173,6 +173,8 @@
     @endif
 
     <!-- Featured Ad Start -->
+    @foreach($advertisements as $advertisement)
+    @if($advertisement->type == 'featured')
     <div class="container-fluid pt-5 pb-3">
         <div class="px-xl-5">
             @foreach($advertisements as $advertisement)
@@ -185,7 +187,9 @@
                 @endif
             @endforeach
         </div>
-    </div>  
+    </div>
+    @endif
+    @endforeach  
     <!-- Featured Ad End -->
 
     @if($section_status->feature_products == 1)
@@ -313,6 +317,8 @@
     @endif
 
     <!-- Recent Ad Start -->
+    @foreach($advertisements as $advertisement)
+    @if($advertisement->type == 'recent')
     <div class="container-fluid pt-5 pb-3">
         <div class="px-xl-5">
             @foreach($advertisements as $advertisement)
@@ -325,7 +331,9 @@
                 @endif
             @endforeach
         </div>
-    </div>  
+    </div>
+    @endif
+    @endforeach  
     <!-- Recent Ad End -->
 
     @if($section_status->recent_products == 1)
@@ -484,6 +492,8 @@
     @endif
 
     <!-- Vendor ad Start -->
+    @foreach($advertisements as $advertisement)
+    @if($advertisement->type == 'vendor')
     <div class="container-fluid pt-5 pb-3">
         <div class="px-xl-5">
             @foreach($advertisements as $advertisement)
@@ -496,10 +506,12 @@
                 @endif
             @endforeach
         </div>
-    </div>  
+    </div>
+    @endif
+    @endforeach  
     <!-- Vendor ad End -->
 
-    @if($section_status->vendors == 1)
+    @if($section_status->vendors == 1 && $suppliers->count() > 0)
     <!-- Vendor Start -->
         <div class="container-fluid py-5">
             <h2 class="section-title position-relative text-uppercase mx-xl-5 mb-4">

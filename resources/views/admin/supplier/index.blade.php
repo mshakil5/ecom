@@ -395,7 +395,8 @@
                       });
                     }
                 },
-                error:function(d){
+                error:function(xhr, status, error) {
+                    console.error(xhr.responseText);
                     // console.log(d);
                 }
             });

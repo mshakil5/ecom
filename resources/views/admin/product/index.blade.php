@@ -91,8 +91,11 @@
                                         @endforeach
                                     </select>
                                 </div>
+                            </div>
 
-                                <div class="form-group col-md-4">
+
+                            <div class="form-row">
+                                <div class="form-group col-md-3">
                                     <label for="brand">Brand</label>
                                     <select class="form-control" id="brand">
                                         <option value="">Select Brand</option>
@@ -102,7 +105,7 @@
                                     </select>
                                 </div>
 
-                                <div class="form-group col-md-4">
+                                <div class="form-group col-md-3">
                                     <label for="model">Model</label>
                                     <select class="form-control" id="model">
                                         <option value="">Select Model</option>
@@ -112,7 +115,7 @@
                                     </select>
                                 </div>
 
-                                <div class="form-group col-md-4">
+                                <div class="form-group col-md-3">
                                     <label for="unit">Unit</label>
                                     <select class="form-control" id="unit">
                                         <option value="">Select Unit</option>
@@ -122,7 +125,7 @@
                                     </select>
                                 </div>
 
-                                <div class="form-group col-md-4">
+                                <div class="form-group col-md-3">
                                     <label for="group">Group</label>
                                     <select class="form-control" id="group">
                                         <option value="">Select Group</option>
@@ -258,7 +261,7 @@
                                     </td>
 
                                     <td>
-                                        <a id="viewBtn" href="#" rid="{{ $data->id }}">
+                                        <a id="viewBtn" href="{{ route('product.show.admin', $data->id) }}">
                                             <i class="fa fa-eye" style="color: #4CAF50; font-size:16px;"></i>
                                         </a>
                                         <a id="EditBtn" rid="{{ $data->id }}">
@@ -471,9 +474,9 @@
                         });
                     }
 
-                    for (var pair of form_data.entries()) {
-                        console.log(pair[0]+ ', ' + pair[1]); 
-                    }
+                    // for (var pair of form_data.entries()) {
+                    //     console.log(pair[0]+ ', ' + pair[1]); 
+                    // }
 
               $.ajax({
                 url: url,

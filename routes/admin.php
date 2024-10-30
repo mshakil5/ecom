@@ -146,6 +146,7 @@ Route::group(['prefix' =>'admin/', 'middleware' => ['auth', 'is_admin']], functi
 
     Route::get('/check-product-code', [ProductController::class, 'checkProductCode'])->name('check.product.code');
 
+    Route::get('/product-details/{id}', [ProductController::class, 'showProductDetails'])->name('product.show.admin');
 
     // Slider crud
     Route::get('/slider', [SliderController::class, 'getSlider'])->name('allslider');

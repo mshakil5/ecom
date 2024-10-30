@@ -15,6 +15,7 @@ use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Validator;
 use App\Models\SubCategory;
 use App\Models\SubSubCategory;
+use App\Models\CompanyDetails;
 
 class ProductController extends Controller
 {
@@ -330,4 +331,10 @@ class ProductController extends Controller
         return response()->json(['exists' => $exists]);
     }
 
+    public function showProductDetails($id)
+    {
+        $currency = CompanyDetails::value('currency');
+        $product = Product::with(['category', 'subCategory', 'brand', 'productModel', 'group', 'unit', 'images'])->findOrFail($id);
+        return view('admin.product.details', compact('product', 'currency'));
+    }
 }
