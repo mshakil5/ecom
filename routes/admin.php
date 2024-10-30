@@ -144,6 +144,8 @@ Route::group(['prefix' =>'admin/', 'middleware' => ['auth', 'is_admin']], functi
     Route::post('/toggle-popular', [ProductController::class, 'togglePopular'])->name('togglePopular');
     Route::post('/toggle-trending', [ProductController::class, 'toggleTrending'])->name('toggleTrending');
 
+    Route::get('/check-product-code', [ProductController::class, 'checkProductCode'])->name('check.product.code');
+
 
     // Slider crud
     Route::get('/slider', [SliderController::class, 'getSlider'])->name('allslider');

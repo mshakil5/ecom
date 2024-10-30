@@ -32,55 +32,62 @@
 
                             <div class="form-row">
                                 <div class="form-group col-md-6">
-                                    <label for="name">Name</label>
+                                    <label for="name">Name<span style="color: red;">*</span></label>
                                     <input type="text" class="form-control" id="name" name="name" placeholder="Enter product name">
                                 </div>
-                                <div class="form-group col-md-2">
-                                    <label for="price">Price</label>
+                                <div class="form-group col-md-3">
+                                    <label for="price">Price<span style="color: red;">*</span></label>
                                     <input type="number" class="form-control" id="price" name="price" placeholder="Enter product price">
                                 </div>
-                                <div class="form-group col-md-2">
-                                    <label for="sku">Sku</label>
-                                    <input type="number" class="form-control" id="sku" name="sku" placeholder="Enter sku">
-                                </div>
-                                <div class="form-group col-md-1">
-                                    <label for="is_featured">Featured</label>
-                                    <input type="checkbox" class="form-control" id="is_featured" name="is_featured">
-                                </div>
-                                <div class="form-group col-md-1">
-                                    <label for="is_featured">Recent</label>
-                                    <input type="checkbox" class="form-control" id="is_recent" name="is_recent">
+                                <div class="form-group col-md-3">
+                                    <label for="product_code">Product Code<span style="color: red;">*</span></label>
+                                    <input type="text" class="form-control" id="product_code" name="product_code" placeholder="Ex. PRD-12345">
+                                    <span id="productCodeError" class="text-danger"></span>
                                 </div>
                             </div>
 
                             <div class="form-row">
                                 <div class="form-group col-md-6">
-                                    <label for="short_description">Short Description</label>
+                                    <label for="short_description">Short Description<span style="color: red;">*</span></label>
                                     <textarea class="form-control" id="short_description" name="short_description" rows="3" placeholder="Enter product short description"></textarea>
                                 </div>
                                 <div class="form-group col-md-6">
-                                    <label for="description">Long Description</label>
+                                    <label for="description">Long Description<span style="color: red;">*</span></label>
                                     <textarea class="form-control" id="description" name="description" rows="3" placeholder="Enter product long description"></textarea>
                                 </div>
                             </div>
 
                             <div class="form-row">
                                 <div class="form-group col-md-4">
-                                    <label for="category">Category</label>
+                                    <label for="category">Category<span style="color: red;">*</span></label>
                                     <select class="form-control" id="category">
                                         <option value="">Select Category</option>
-                                        @foreach(\App\Models\Category::with('subcategories')->get() as $category)
-                                        <option value="{{ $category->id }}">{{ $category->name }}</option>
+                                        @foreach($categories as $category)
+                                            <option value="{{ $category->id }}">{{ $category->name }}</option>
                                         @endforeach
                                     </select>
                                 </div>
 
-                                <div class="form-group col-md-4">
+                                <div class="form-group col-md-4" id="subcategory-section" style="display: none;">
                                     <label for="subcategory">Sub Category</label>
                                     <select class="form-control" id="subcategory">
                                         <option value="">Select Sub Category</option>
-                                        @foreach(\App\Models\SubCategory::all() as $subcategory)
-                                            <option class="subcategory-option category-{{ $subcategory->category_id }}" value="{{ $subcategory->id }}">{{ $subcategory->name }}</option>
+                                        @foreach($subCategories as $subcategory)
+                                            <option class="subcategory-option category-{{ $subcategory->category_id }}" value="{{ $subcategory->id }}" style="display: none;">
+                                                {{ $subcategory->name }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                </div>
+
+                                <div class="form-group col-md-4" id="subsubcategory-section" style="display: none;">
+                                    <label for="subsubcategory">Sub Sub Category</label>
+                                    <select class="form-control" id="subsubcategory">
+                                        <option value="">Select Sub Sub Category</option>
+                                        @foreach($subSubCategories as $subsubcategory)
+                                            <option class="subsubcategory-option subcategory-{{ $subsubcategory->sub_category_id }}" value="{{ $subsubcategory->id }}" style="display: none;">
+                                                {{ $subsubcategory->name }}
+                                            </option>
                                         @endforeach
                                     </select>
                                 </div>
@@ -123,6 +130,31 @@
                                         <option value="{{ $group->id }}">{{ $group->name }}</option>
                                         @endforeach
                                     </select>
+                                </div>
+
+                                <div class="form-group col-md-1">
+                                    <label for="is_featured">Featured</label>
+                                    <input type="checkbox" class="form-control" id="is_featured" name="is_featured" value="1">
+                                </div>
+                                <div class="form-group col-md-1">
+                                    <label for="is_recent">Recent</label>
+                                    <input type="checkbox" class="form-control" id="is_recent" name="is_recent" value="1">
+                                </div>
+                                <div class="form-group col-md-1">
+                                    <label for="is_new_arrival">New Arriv.</label>
+                                    <input type="checkbox" class="form-control" id="is_new_arrival" name="is_new_arrival" value="1">
+                                </div>
+                                <div class="form-group col-md-1">
+                                    <label for="is_top_rated">Top Rated</label>
+                                    <input type="checkbox" class="form-control" id="is_top_rated" name="is_top_rated" value="1">
+                                </div>
+                                <div class="form-group col-md-1">
+                                    <label for="is_popular">Popular</label>
+                                    <input type="checkbox" class="form-control" id="is_popular" name="is_popular" value="1">
+                                </div>
+                                <div class="form-group col-md-1">
+                                    <label for="is_trending">Trending</label>
+                                    <input type="checkbox" class="form-control" id="is_trending" name="is_trending" value="1">
                                 </div>
                             </div>
 
@@ -292,26 +324,75 @@
 
 <script>
     $(document).ready(function() {
+        $('#subcategory-section').hide();
+        $('#subsubcategory-section').hide();
+
         $('#category').change(function() {
             var categoryId = $(this).val();
             if (categoryId) {
                 $('#subcategory').val('').find('option').hide();
                 $('.category-' + categoryId).show();
+                
+                $('#subcategory-section').show();
+
+                $('#subsubcategory').val('');
+                $('#subsubcategory-section').hide();
             } else {
                 $('#subcategory').val('').find('option').hide();
-                $('#subcategory').find('.subcategory-option').show();
+                $('#subcategory-section').hide();
+                $('#subsubcategory-section').hide();
+            }
+        });
+
+        $('#subcategory').change(function() {
+            var subcategoryId = $(this).val();
+            if (subcategoryId) {
+                $('#subsubcategory').val('').find('option').hide();
+                $('.subcategory-' + subcategoryId).show();
+
+                $('#subsubcategory-section').show();
+            } else {
+                $('#subsubcategory').val('').find('option').hide();
+                $('#subsubcategory-section').hide();
             }
         });
     });
-</script>
 
-<script>
     $(function () {
       $("#example1").DataTable({
         "responsive": true, "lengthChange": false, "autoWidth": false,
         "buttons": ["copy", "csv", "excel", "pdf", "print", "colvis"]
       }).buttons().container().appendTo('#example1_wrapper .col-md-6:eq(0)');
     });
+
+    $('#product_code').on('keyup', function() {
+        let productCode = $(this).val().trim();
+        let productId = $("#codeid").val();
+
+        if (productCode.length >= 2) {
+            $.ajax({
+                url: "{{ route('check.product.code') }}",
+                method: "GET",
+                data: {
+                    product_code: productCode,
+                    product_id: productId
+                },
+                success: function(response) {
+                    if (response.exists) {
+                        $('#productCodeError').text('This product code is already in use.');
+                        $('#addBtn').attr('disabled', true);
+                    } else {
+                        $('#productCodeError').text('');
+                        $('#addBtn').attr('disabled', false);
+                    }
+                }
+            });
+        } else {
+            $('#productCodeError').text('');
+            $('#addBtn').attr('disabled', true);
+        }
+    });
+
 </script>
 
 <script>
@@ -344,17 +425,30 @@
                 form_data.append("price", $("#price").val());
                 form_data.append("category_id", $("#category").val());
                 form_data.append("sub_category_id", $("#subcategory").val());
+                form_data.append("sub_sub_category_id", $("#subsubcategory").val());
                 form_data.append("brand_id", $("#brand").val());
                 form_data.append("product_model_id", $("#model").val());
                 form_data.append("group_id", $("#group").val());
                 form_data.append("unit_id", $("#unit").val());
-                form_data.append("sku", $("#sku").val());
+                form_data.append("product_code", $("#product_code").val());
 
                 var is_featured = $("#is_featured").is(":checked") ? 1 : 0;
                 form_data.append("is_featured", is_featured);
 
                 var is_recent = $("#is_recent").is(":checked") ? 1 : 0;
                 form_data.append("is_recent", is_recent);
+
+                var is_new_arrival = $("#is_new_arrival").is(":checked") ? 1 : 0;
+                form_data.append("is_new_arrival", is_new_arrival);
+
+                var is_top_rated = $("#is_top_rated").is(":checked") ? 1 : 0;
+                form_data.append("is_top_rated", is_top_rated);
+
+                var is_popular = $("#is_popular").is(":checked") ? 1 : 0;
+                form_data.append("is_popular", is_popular);
+
+                var is_trending = $("#is_trending").is(":checked") ? 1 : 0;
+                form_data.append("is_trending", is_trending);
 
                 var featureImgInput = document.getElementById('feature-img');
                 if(featureImgInput.files && featureImgInput.files[0]) {
@@ -377,9 +471,9 @@
                         });
                     }
 
-                    // for (var pair of form_data.entries()) {
-                    //     console.log(pair[0]+ ', ' + pair[1]); 
-                    // }
+                    for (var pair of form_data.entries()) {
+                        console.log(pair[0]+ ', ' + pair[1]); 
+                    }
 
               $.ajax({
                 url: url,
@@ -419,17 +513,30 @@
                 form_data.append("price", $("#price").val());
                 form_data.append("category_id", $("#category").val());
                 form_data.append("sub_category_id", $("#subcategory").val());
+                form_data.append("sub_sub_category_id", $("#subsubcategory").val());
                 form_data.append("brand_id", $("#brand").val());
                 form_data.append("product_model_id", $("#model").val());
                 form_data.append("group_id", $("#group").val());
                 form_data.append("unit_id", $("#unit").val());
-                form_data.append("sku", $("#sku").val());
+                form_data.append("product_code", $("#product_code").val());
                 
                 var is_featured = $("#is_featured").is(":checked") ? 1 : 0;
                 form_data.append("is_featured", is_featured);
 
                 var is_recent = $("#is_recent").is(":checked") ? 1 : 0;
                 form_data.append("is_recent", is_recent);
+
+                var is_new_arrival = $("#is_new_arrival").is(":checked") ? 1 : 0;
+                form_data.append("is_new_arrival", is_new_arrival);
+
+                var is_top_rated = $("#is_top_rated").is(":checked") ? 1 : 0;
+                form_data.append("is_top_rated", is_top_rated);
+
+                var is_popular = $("#is_popular").is(":checked") ? 1 : 0;
+                form_data.append("is_popular", is_popular);
+
+                var is_trending = $("#is_trending").is(":checked") ? 1 : 0;
+                form_data.append("is_trending", is_trending);
 
                 var featureImgInput = document.querySelector('#feature-img');
                 if(featureImgInput.files && featureImgInput.files[0]) {
@@ -553,11 +660,27 @@
           $('#short_description').summernote('code', data.short_description);
 
           $("#price").val(data.price);
-          $("#sku").val(data.sku);
+          $("#product_code").val(data.product_code);
           $("#is_featured").prop('checked', data.is_featured == 1 ? true : false);
           $("#is_recent").prop('checked', data.is_recent == 1 ? true : false);
+          $("#is_new_arrival").prop('checked', data.is_new_arrival == 1 ? true : false);
+          $("#is_top_rated").prop('checked', data.is_top_rated == 1 ? true : false);
+          $("#is_popular").prop('checked', data.is_popular == 1 ? true : false);
+          $("#is_trending").prop('checked', data.is_trending == 1 ? true : false);
+
           $("#category").val(data.category_id);
-          $("#subcategory").val(data.sub_category_id);
+          if (data.sub_category_id) {
+            $("#subcategory").val(data.sub_category_id);
+            $("#subcategory-section").show();
+            $('#subcategory option').hide();
+            $('#subcategory option[value="' + data.sub_category_id + '"]').show();
+          }
+          if (data.sub_sub_category_id) {
+            $("#subsubcategory").val(data.sub_sub_category_id);
+            $("#subsubcategory-section").show();
+            $('#subsubcategory option').hide();
+            $('#subsubcategory option[value="' + data.sub_sub_category_id + '"]').show();
+          }
           $("#brand").val(data.brand_id);
           $("#model").val(data.product_model_id);
           $("#group").val(data.group_id);
@@ -598,6 +721,7 @@
           $('#createThisForm')[0].reset();
           $("#addBtn").val('Create').text('Create');
           $("#addBtn").val('Create');
+          $("#codeid").val('');
           $("#cardTitle").text('Add new data');
           $('#preview-image').attr('src', '#');
           $('#dynamicImages').empty();
@@ -605,7 +729,7 @@
           $('#imageUpload1').val('');
           $("#description").summernote('code', '');
           $("#short_description").summernote('code', '');
-
+          $('#addBtn').attr('disabled', false);
       }
   });
 </script>

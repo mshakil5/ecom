@@ -13,6 +13,8 @@ use App\Models\Unit;
 use App\Models\ProductImage;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Validator;
+use App\Models\SubCategory;
+use App\Models\SubSubCategory;
 
 class ProductController extends Controller
 {
@@ -22,26 +24,34 @@ class ProductController extends Controller
         $product_models = ProductModel::select('id', 'name')->orderby('id','DESC')->get();
         $groups = Group::select('id', 'name')->orderby('id','DESC')->get();
         $units = Unit::select('id', 'name')->orderby('id','DESC')->get();
+        $categories = Category::select('id', 'name')->orderby('id', 'DESC')->get();
+        $subCategories = SubCategory::select('id', 'name', 'category_id')->orderby('id', 'DESC')->get();
+        $subSubCategories = SubSubCategory::select('id', 'name', 'sub_category_id')->orderby('id', 'DESC')->get();
         $data = Product::select('id', 'name', 'price', 'category_id', 'sub_category_id', 'brand_id', 'product_model_id', 'group_id', 'unit_id', 'is_featured', 'is_recent', 'is_popular', 'is_trending')->orderby('id','DESC')->get();
-        return view('admin.product.index', compact('data', 'brands', 'product_models', 'groups', 'units'));
+        return view('admin.product.index', compact('data', 'brands', 'product_models', 'groups', 'units', 'categories', 'subCategories', 'subSubCategories'));
     }
 
     public function productStore(Request $request)
     {
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:255',
-            'short_description' => 'nullable|string',
+            'short_description' => 'required|string',
             'description' => 'required|string',
             'price' => 'required|numeric',
             'category_id' => 'required',
-            'sub_category_id' => 'required',
-            'brand_id' => 'required',
-            'product_model_id' => 'required',
-            'group_id' => 'required',
-            'unit_id' => 'required',
-            'sku' => 'required|integer',
+            'sub_category_id' => 'nullable',
+            'sub_sub_category_id' => 'nullable',
+            'brand_id' => 'nullable',
+            'product_model_id' => 'nullable',
+            'group_id' => 'nullable',
+            'unit_id' => 'nullable',
+            'product_code' => 'required',
             'is_featured' => 'nullable',
             'is_recent' => 'nullable',
+            'is_new_arrival' => 'nullable',
+            'is_top_rated' => 'nullable',
+            'is_popular' => 'nullable',
+            'is_trending' => 'nullable',
             'feature_image' => 'nullable|image|max:10240',
             'images.*' => 'nullable|image|max:10240'
         ]);
@@ -59,13 +69,18 @@ class ProductController extends Controller
         $product->price = $request->input('price');
         $product->category_id = $request->input('category_id');
         $product->sub_category_id = $request->input('sub_category_id');
+        $product->sub_sub_category_id = $request->input('sub_sub_category_id');
         $product->brand_id = $request->input('brand_id');
         $product->product_model_id = $request->input('product_model_id');
         $product->group_id = $request->input('group_id');
         $product->unit_id = $request->input('unit_id');
-        $product->sku = $request->input('sku');
+        $product->product_code = $request->input('product_code');
         $product->is_featured = $request->input('is_featured', false);
         $product->is_recent = $request->input('is_recent', false);
+        $product->is_new_arrival = $request->input('is_new_arrival', false);
+        $product->is_top_rated = $request->input('is_top_rated', false);
+        $product->is_popular = $request->input('is_popular', false);
+        $product->is_trending = $request->input('is_trending', false);
         $product->created_by = auth()->user()->id;
 
         if ($request->hasFile('feature_image')) {
@@ -109,18 +124,23 @@ class ProductController extends Controller
     {
        $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:255',
-            'short_description' => 'nullable|string',
+            'short_description' => 'required|string',
             'description' => 'required|string',
             'price' => 'required|numeric',
             'category_id' => 'required',
-            'sub_category_id' => 'required',
-            'brand_id' => 'required',
-            'product_model_id' => 'required',
-            'group_id' => 'required',
-            'unit_id' => 'required',
-            'sku' => 'required|integer',
+            'sub_category_id' => 'nullable',
+            'sub_sub_category_id' => 'nullable',
+            'brand_id' => 'nullable',
+            'product_model_id' => 'nullable',
+            'group_id' => 'nullable',
+            'unit_id' => 'nullable',
+            'product_code' => 'required',
             'is_featured' => 'nullable',
             'is_recent' => 'nullable',
+            'is_new_arrival' => 'nullable',
+            'is_top_rated' => 'nullable',
+            'is_popular' => 'nullable',
+            'is_trending' => 'nullable',
             'feature_image' => 'nullable|image|max:10240',
             // 'images.*' => 'nullable|image|max:10240'
         ]);
@@ -139,13 +159,18 @@ class ProductController extends Controller
         $product->price = $request->input('price');
         $product->category_id = $request->input('category_id');
         $product->sub_category_id = $request->input('sub_category_id');
+        $product->sub_sub_category_id = $request->input('sub_sub_category_id');
         $product->brand_id = $request->input('brand_id');
         $product->product_model_id = $request->input('product_model_id');
         $product->group_id = $request->input('group_id');
         $product->unit_id = $request->input('unit_id');
-        $product->sku = $request->input('sku');
+        $product->product_code = $request->input('product_code');
         $product->is_featured = $request->input('is_featured', false);
         $product->is_recent = $request->input('is_recent', false);
+        $product->is_new_arrival = $request->input('is_new_arrival', false);
+        $product->is_top_rated = $request->input('is_top_rated', false);
+        $product->is_popular = $request->input('is_popular', false);
+        $product->is_trending = $request->input('is_trending', false);
         $product->updated_by = auth()->user()->id;
         $product->save();
 
@@ -287,6 +312,22 @@ class ProductController extends Controller
         $product->save();
 
         return response()->json(['message' => 'Trending status updated successfully!']);
+    }
+
+    public function checkProductCode(Request $request)
+    {
+        $productCode = $request->product_code;
+        $productId = $request->product_id;
+    
+        if ($productId) {
+            $exists = Product::where('product_code', $productCode)
+                            ->where('id', '!=', $productId)
+                            ->exists();
+        } else {
+            $exists = Product::where('product_code', $productCode)->exists();
+        }
+    
+        return response()->json(['exists' => $exists]);
     }
 
 }

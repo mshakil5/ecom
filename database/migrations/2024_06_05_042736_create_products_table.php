@@ -25,11 +25,13 @@ return new class extends Migration
             $table->unsignedBigInteger('unit_id')->nullable();
             $table->unsignedBigInteger('size_id')->nullable();
             $table->unsignedBigInteger('color_id')->nullable(); 
-            $table->integer('sku')->default(0);
+            $table->string('product_code')->nullable();
             $table->boolean('is_featured')->default(0);
             $table->boolean('is_recent')->default(0);
             $table->boolean('is_popular')->default(0);
             $table->boolean('is_trending')->default(0);
+            $table->boolean('is_new_arrival')->default(0);
+            $table->boolean('is_top_rated')->default(0);
             $table->string('feature_image')->nullable();
             $table->boolean('status')->default(1);
             $table->foreign('category_id')->references('id')->on('categories')->onDelete('cascade');
