@@ -101,7 +101,9 @@
                                         @foreach($order->orderDetails as $orderDetail)
                                             <tr>
                                                 <td>
-                                                    <img src="{{ asset('/images/products/' . $orderDetail->product->feature_image) }}" alt="{{ $orderDetail->product->name }}" style="width: 100px; height: auto;">
+                                                    @if($orderDetail->product)
+                                                        <img src="{{ asset('/images/products/' . $orderDetail->product->feature_image) }}" alt="{{ $orderDetail->product->name }}" style="width: 100px; height: auto;">
+                                                    @endif
                                                 </td>
                                                 <td>{{ $orderDetail->product->name }}</td>
                                                 <td>{{ $orderDetail->quantity }}</td>

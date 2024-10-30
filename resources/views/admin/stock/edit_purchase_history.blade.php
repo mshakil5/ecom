@@ -18,7 +18,7 @@
                             <div class="row">
                                 <div class="col-sm-3">
                                     <div class="form-group">
-                                        <label for="purchase_date">Purchase Date</label>
+                                        <label for="purchase_date">Purchase Date<span style="color: red;">*</span></label>
                                         <input type="date" class="form-control" id="purchase_date" name="purchase_date" placeholder="Enter purchase date" value="{{ $purchase->purchase_date }}">
                                     </div>
                                 </div>
@@ -41,7 +41,7 @@
                                 </div>
                                 <div class="col-sm-3">
                                     <div class="form-group">
-                                        <label for="invoice">Invoice</label>
+                                        <label for="invoice">Invoice<span style="color: red;">*</span></label>
                                         <input type="text" class="form-control" id="invoice" name="invoice" placeholder="Enter invoice" value="{{ $purchase->invoice }}">
                                     </div>
                                 </div>
@@ -53,7 +53,7 @@
                                 </div>
                                 <div class="col-sm-3">
                                     <div class="form-group">
-                                        <label for="purchase_type">Payment Type</label>
+                                        <label for="purchase_type">Payment Type<span style="color: red;">*</span></label>
                                         <select class="form-control" id="purchase_type" name="purchase_type">
                                             <option value="">Select...</option>
                                             <option value="cash" {{ $purchase->purchase_type == 'cash' ? 'selected' : '' }}>Cash</option>

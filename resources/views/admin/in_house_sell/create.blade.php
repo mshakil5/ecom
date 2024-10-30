@@ -8,7 +8,7 @@
             <div class="col-md-12">
                 <div class="card card-secondary">
                     <div class="card-header">
-                        <h3 class="card-title" id="cardTitle">Sell Product</h3>
+                        <h3 class="card-title" id="cardTitle">Sale Product</h3>
                     </div>
                     <div class="card-body">
                         <div class="ermsg"></div>
@@ -17,13 +17,13 @@
                             <div class="row">
                                 <div class="col-sm-2">
                                     <div class="form-group">
-                                        <label for="purchase_date">Selling Date</label>
+                                        <label for="purchase_date">Selling Date<span style="color: red;">*</span></label>
                                         <input type="date" class="form-control" id="purchase_date" name="purchase_date" placeholder="Enter date">
                                     </div>
                                 </div>
                                 <div class="col-sm-3">
                                     <div class="form-group">
-                                        <label for="supplier_id">Select Customer</label>
+                                        <label for="supplier_id">Select Customer<span style="color: red;">*</span></label>
                                         <select class="form-control" id="user_id" name="user_id">
                                             <option value="" >Select...</option>
                                             @foreach($customers as $customer)
@@ -34,7 +34,7 @@
                                 </div>
                                 <div class="col-sm-2">
                                     <div class="form-group">
-                                        <label for="purchase_type">Transaction Type</label>
+                                        <label for="purchase_type">Transaction Type<span style="color: red;">*</span></label>
                                         <select class="form-control" id="payment_method" name="payment_method">
                                             <option value="">Select...</option>
                                             <option value="cash">Cash</option>

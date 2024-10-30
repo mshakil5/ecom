@@ -395,7 +395,7 @@
                     success: function(response) {
 
                         swal({
-                            text: "Order is placing. Go to paypal payment",
+                            text: "Order is placing",
                             icon: "success",
                             button: {
                                 text: "OK",

@@ -36,7 +36,7 @@
                   <div class="row">
                     <div class="col-sm-12" id="typeInput">
                       <div class="form-group">
-                        <label>Type</label>
+                        <label>Type<span style="color: red;">*</span></label>
                         <select class="form-control" id="type" name="type">
                             <option value="">Plese select...</option>
                             @foreach ($availableTypes as $type)
@@ -47,7 +47,7 @@
                     </div>
                     <div class="col-sm-12">
                       <div class="form-group">
-                        <label>Link</label>
+                        <label>Link<span style="color: red;">*</span></label>
                         <input type="url" id="link" name="link" class="form-control" placeholder="Enter link">
                       </div>
                     </div>

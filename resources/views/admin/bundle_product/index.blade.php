@@ -29,11 +29,11 @@
                             <input type="hidden" class="form-control" id="codeid" name="codeid">
                             <div class="form-row">
                                 <div class="form-group col-md-6">
-                                    <label for="name">Name</label>
+                                    <label for="name">Name<span style="color: red;">*</span></label>
                                     <input type="text" class="form-control" id="name" name="name" placeholder="Enter bundle product name">
                                 </div>
                                 <div class="form-group col-md-6">
-                                    <label for="product_ids">Products</label>
+                                    <label for="product_ids">Products<span style="color: red;">*</span></label>
                                     <select class="form-control select2" id="product_ids" name="product_ids[]" multiple="multiple" data-placeholder="Select products">
                                         @foreach($products as $product)
                                         <option value="{{ $product->id }}">{{ $product->name }}</option>
@@ -55,11 +55,11 @@
 
                             <div class="form-row">  
                                 <div class="form-group col-md-6">
-                                    <label for="total_price">Total Price</label>
+                                    <label for="total_price">Total Price<span style="color: red;">*</span></label>
                                     <input type="number" class="form-control" id="total_price" name="total_price" placeholder="Total price of selected products" readonly>
                                 </div>
                                 <div class="form-group col-md-6">
-                                    <label for="price">Bundle Price</label>
+                                    <label for="price">Bundle Price<span style="color: red;">*</span></label>
                                     <input type="number" class="form-control" id="price" name="price" placeholder="Enter bundle product price">
                                 </div>
                             </div>

@@ -36,7 +36,7 @@
                   <div class="row">
                     <div class="col-sm-12" id="showStatus" >
                       <div class="form-group">
-                        <label for="type">Type</label>
+                        <label for="type">Type<span style="color: red;">*</span></label>
                         <select id="type" name="type" class="form-control">
                           <option>Select Type</option>
                           @foreach($availableTypes as $type)
@@ -49,14 +49,14 @@
                     </div>
                     <div class="col-sm-12">
                       <div class="form-group">
-                        <label>Title</label>
+                        <label>Title<span style="color: red;">*</span></label>
                         <input type="text" class="form-control" id="subject" name="subject" placeholder="Enter subject">
                       </div>
                     </div>
                   </div>
 
                   <div>
-                    <label for="content">Content</label>
+                    <label for="content">Content<span style="color: red;">*</span></label>
                         <textarea class="form-control" id="content" name="content" rows="3" placeholder="Enter content"></textarea>
                   </div>
                   
