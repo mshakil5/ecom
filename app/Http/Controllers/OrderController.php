@@ -23,6 +23,7 @@ use Illuminate\Support\Facades\Log;
 use Exception;
 use Stripe\Stripe;
 use Stripe\PaymentIntent;
+use Carbon\Carbon;
 
 class OrderController extends Controller
 {
@@ -566,16 +567,21 @@ class OrderController extends Controller
                             ];
                             return isset($statusLabels[$order->status]) ? $statusLabels[$order->status] : 'Unknown';
                         })
-                        ->addColumn('name', function ($order) {
-                            return $order->name;
+                        ->editColumn('payment_method', function ($order) {
+                            $paymentMethods = [
+                                'cashOnDelivery' => 'Cash On Delivery',
+                                'stripe' => 'Stripe',
+                                'paypal' => 'PayPal',
+                            ];
+                            return isset($paymentMethods[$order->payment_method]) ? $paymentMethods[$order->payment_method] : $order->payment_method;
                         })
-                        ->addColumn('email', function ($order) {
-                            return $order->email;
+                        ->editColumn('purchase_date', function ($order) {
+                            return Carbon::parse($order->purchase_date)->format('d-m-Y');
                         })
-                        ->addColumn('phone', function ($order) {
-                            return $order->phone;
+                        ->addColumn('contact_info', function ($order) {
+                            return $order->name . '<br>' . $order->email . '<br>' . $order->phone;
                         })
-                        ->rawColumns(['action'])
+                        ->rawColumns(['action', 'contact_info'])
                         ->make(true);
     }
 

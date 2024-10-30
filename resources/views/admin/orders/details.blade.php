@@ -5,6 +5,9 @@
     <div class="container-fluid">
         <div class="row">
             <div class="col-12">
+                <a href="{{ url()->previous() }}" class="btn btn-secondary mb-3">
+                    <i class="fas fa-arrow-left"></i> Back
+                </a>
                 <div class="card card-secondary">
                     <div class="card-header">
                         <h3 class="card-title">Order Details</h3>
@@ -36,7 +39,17 @@
                                 <p><strong>Shipping Amount:</strong> {{ number_format($order->shipping_amount, 2) }}</p>
                                 <p><strong>Discount Amount:</strong> {{ number_format($order->discount_amount, 2) }}</p>
                                 <p><strong>Total Amount:</strong> {{ number_format($order->net_amount, 2) }}</p>
-                                <p><strong>Payment Method:</strong> {{ ucfirst($order->payment_method) }}</p>
+                                <p><strong>Payment Method:</strong> 
+                                    @if($order->payment_method == 'cashOnDelivery')
+                                        Cash On Delivery
+                                    @elseif($order->payment_method == 'stripe')
+                                        Stripe
+                                    @elseif($order->payment_method == 'paypal')
+                                        PayPal
+                                    @else
+                                        {{ ucfirst($order->payment_method) }}
+                                    @endif
+                                </p>
                                 <p><strong>Status:</strong> 
                                     @if ($order->status === 1)
                                         Pending

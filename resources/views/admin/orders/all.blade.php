@@ -13,11 +13,9 @@
                         <table id="pending-orders-table" class="table table-bordered table-striped table-fluid">
                             <thead>
                                 <tr>
-                                    <th>Name</th>
-                                    <th>Email</th>
-                                    <th>Phone</th>
+                                    <th>Date</th>
+                                    <th>Name/Email/Phone</th>
                                     <th>Subtotal</th>
-                                    <th>Shipping</th>
                                     <th>Discount</th>
                                     <th>Total</th>
                                     <th>Payment Method</th>
@@ -41,12 +39,11 @@
             processing: true,
             serverSide: true,
             ajax: "{{ route('allorder') }}",
+            pageLength: 100,
             columns: [
-                { data: 'name', name: 'name' },
-                { data: 'email', name: 'email' },
-                { data: 'phone', name: 'phone' },
+                { data: 'purchase_date', name: 'purchase_date' },
+                { data: 'contact_info', name: 'contact_info' },
                 { data: 'subtotal_amount', name: 'subtotal_amount' },
-                { data: 'shipping_amount', name: 'shipping_amount' },
                 { data: 'discount_amount', name: 'discount_amount' },
                 { data: 'net_amount', name: 'net_amount' },
                 { data: 'payment_method', name: 'payment_method' },
