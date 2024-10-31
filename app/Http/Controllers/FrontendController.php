@@ -29,8 +29,8 @@ class FrontendController extends Controller
 
         $specialOffers = SpecialOffer::select('offer_image', 'offer_name', 'offer_title', 'slug')
             ->where('status', 1)
-            ->whereDate('start_date', '<=', now())
-            ->whereDate('end_date', '>=', now())
+            // ->whereDate('start_date', '<=', now())
+            // ->whereDate('end_date', '>=', now())
             ->latest()
             ->get();
 
@@ -109,9 +109,29 @@ class FrontendController extends Controller
                         ->select('title', 'sub_title', 'image')
                         ->get();
 
-        $categories = Category::where('status', 1)->select('name', 'image', 'slug')->orderBy('id', 'desc')->take(2)->get();
+        $mostViewedProducts = Product::where('status', 1)
+            ->where('is_recent', 1)
+            ->orderByDesc('watch')
+            ->whereDoesntHave('specialOfferDetails')
+            ->whereDoesntHave('flashSellDetails')
+            ->with('stock')
+            ->select('id', 'name', 'feature_image', 'price', 'slug')
+            ->take(12)
+            ->get();
 
-        return view('frontend.index', compact('specialOffers','flashSells','featuredProducts', 'trendingProducts', 'currency', 'recentProducts', 'popularProducts', 'initialCategoryProducts', 'section_status', 'advertisements', 'suppliers', 'sliders', 'categories'));
+        $categories = Category::where('status', 1)
+            ->with(['products' => function ($query) {
+                $query->select('id', 'category_id', 'name', 'price', 'slug', 'feature_image', 'watch')
+                    ->orderBy('watch', 'desc');
+            }])
+            ->select('id', 'name', 'image', 'slug')
+            ->orderBy('id', 'asc')
+            ->get()
+            ->each(function ($category) {
+                $category->setRelation('products', $category->products->take(6));
+            });
+
+        return view('frontend.index', compact('specialOffers','flashSells','featuredProducts', 'trendingProducts', 'currency', 'recentProducts', 'popularProducts', 'initialCategoryProducts', 'section_status', 'advertisements', 'suppliers', 'sliders', 'categories', 'mostViewedProducts'));
     }
 
     public function getCategoryProducts(Request $request)
@@ -140,25 +160,33 @@ class FrontendController extends Controller
     public function showCategoryProducts($slug)
     {
         $currency = CompanyDetails::value('currency');
-        $category = Category::where('slug', $slug)
-                        ->with(['products:id,category_id,name,feature_image,price,slug'])
-                        ->firstOrFail();
-        $company = CompanyDetails::select('company_name')
-                             ->first();
+
+        $category = Category::where('slug', $slug)->firstOrFail();
+
+        $products = Product::where('category_id', $category->id)
+                            ->select('id', 'category_id', 'name', 'feature_image', 'price', 'slug')
+                            ->paginate(20);
+        
+        $company = CompanyDetails::select('company_name')->first();
         $title = $company->company_name . ' - ' . $category->name;
-        return view('frontend.category_products', compact('category', 'title', 'currency'));
-    }
+        
+        return view('frontend.category_products', compact('category', 'products', 'title', 'currency'));
+    } 
 
     public function showSubCategoryProducts($slug)
     {
         $currency = CompanyDetails::value('currency');
-        $sub_category = SubCategory::where('slug', $slug)
-                        ->with(['products:id,sub_category_id,name,feature_image,price,slug'])
-                        ->firstOrFail();
-        $company = CompanyDetails::select('company_name')
-                             ->first();
+
+        $sub_category = SubCategory::where('slug', $slug)->firstOrFail();
+
+        $products = Product::where('sub_category_id', $sub_category->id)
+                            ->select('id', 'sub_category_id', 'name', 'feature_image', 'price', 'slug')
+                            ->paginate(20);
+
+        $company = CompanyDetails::select('company_name')->first();
         $title = $company->company_name . ' - ' . $sub_category->name;
-        return view('frontend.sub_category_products', compact('sub_category', 'title', 'currency'));
+
+        return view('frontend.sub_category_products', compact('sub_category', 'products', 'title', 'currency'));
     }
 
     public function showProduct($slug, $offerId = null)
@@ -294,21 +322,28 @@ class FrontendController extends Controller
         return response()->json($output);
     }
 
-    public function shop()
+    public function shop(Request $request)
     {
          $currency = CompanyDetails::value('currency');
+
          $categories = Category::where('status', 1)
             ->orderBy('id', 'desc')
             ->select('id', 'name')
             ->get();
-         $products = Product::where('status', 1)
+
+        $perPage = $request->input('per_page', 10);
+
+        $minPrice = Product::where('status', 1)->min('price'); 
+        $maxPrice = Product::where('status', 1)->max('price');
+
+        $products = Product::where('status', 1)
             ->orderBy('id', 'desc')
             ->whereDoesntHave('specialOfferDetails')
             ->whereDoesntHave('flashSellDetails')
             ->with('stock')
             ->select('id', 'name', 'feature_image', 'price', 'slug')
-            ->get();
-        return view('frontend.shop', compact('currency', 'products', 'categories'));
+            ->paginate($perPage);
+        return view('frontend.shop', compact('currency', 'products', 'categories', 'perPage', 'minPrice', 'maxPrice'));
     }
 
     public function contact()

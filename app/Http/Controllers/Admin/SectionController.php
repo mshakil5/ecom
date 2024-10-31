@@ -27,6 +27,7 @@ class SectionController extends Controller
             'flash_sell' => 'required|in:0,1',
             'recent_products' => 'required|in:0,1',
             'popular_products' => 'required|in:0,1',
+            'most_viewed_products' => 'required|in:0,1',
             'trending_products' => 'required|in:0,1',
             'category_products' => 'required|in:0,1',
             'vendors' => 'required|in:0,1',
@@ -34,6 +35,7 @@ class SectionController extends Controller
 
         $status->slider = $request->input('slider');
         $status->special_offer = $request->input('special_offer');
+        $status->most_viewed_products = $request->input('most_viewed_products');
         $status->features = $request->input('features');
         $status->categories = $request->input('categories');
         $status->feature_products = $request->input('feature_products');

@@ -76,6 +76,15 @@
                     </td>
                 </tr>
                 <tr>
+                    <td>Most Viewed Products</td>
+                    <td>
+                        <select name="most_viewed_products" id="most_viewed_products" class="form-control">
+                            <option value="1" {{ $status->most_viewed_products ? 'selected' : '' }}>On</option>
+                            <option value="0" {{ !$status->most_viewed_products ? 'selected' : '' }}>Off</option>
+                        </select>
+                    </td>
+                </tr>
+                <tr>
                     <td>Recent Products</td>
                     <td>
                         <select name="recent_products" id="recent_products" class="form-control">

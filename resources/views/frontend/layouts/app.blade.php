@@ -1,9 +1,24 @@
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale())}}">
 
-    @php
-        $company = \App\Models\CompanyDetails::select('fav_icon', 'company_name')->first();
-    @endphp  
+@php
+
+    $company = \App\Models\CompanyDetails::select('fav_icon', 'company_name', 'footer_content', 'address1', 'email1', 'phone1', 'company_logo', 'facebook', 'twitter', 'instagram', 'youtube', 'currency')->first();
+
+    $currency = $company->currency;
+
+    $categories = \App\Models\Category::where('status', 1)
+    ->select('id', 'name', 'slug')
+    ->with(['products' => function($query) {
+        $query->select('id', 'category_id', 'name', 'slug')
+            ->orderBy('watch', 'desc')
+            ->limit(20);
+    }])
+    ->get();
+
+    $advertisements = \App\Models\Ad::where('status', 1)->select('type', 'link', 'image')->get();
+
+@endphp 
 
 <head>
     <meta charset="utf-8">
@@ -16,60 +31,89 @@
     <!-- Favicon -->
     <link rel="icon" href="{{ asset('images/company/' . $company->fav_icon) }}">
 
-    <!-- Google Web Fonts -->
-    <link rel="preconnect" href="https://fonts.gstatic.com">
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">  
+    <link rel="stylesheet" href="{{ asset('frontend/css/line-awesome/css/line-awesome.min.css') }}">
 
-    <!-- Font Awesome -->
-    <link rel="stylesheet" href="{{ asset('assets/admin/plugins/fontawesome-free/css/all.min.css')}}">
+    <link rel="stylesheet" href="{{ asset('frontend/css/bootstrap.min.css') }}">
 
-    <!-- Libraries Stylesheet -->
-    <link rel="stylesheet" href="{{ asset('assets/frontend/lib/animate/animate.min.css') }}" rel="stylesheet">
-    <link rel="stylesheet" href="{{ asset('assets/frontend/lib/owlcarousel/assets/owl.carousel.min.css') }}" rel="stylesheet">
+    <link rel="stylesheet" href="{{ asset('frontend/css/owl-carousel/owl.carousel.css') }}">
 
-    <!-- Customized Stylesheet -->
-    <link rel="stylesheet" href="{{ asset('assets/frontend/css/style.css') }}" rel="stylesheet">
-    <link rel="stylesheet" href="{{ asset('assets/frontend/css/custom.css') }}" rel="stylesheet">
-    <link rel="stylesheet" href="{{ asset('assets/frontend/lib/jquery/jquery.dataTables.min.css')}}" rel="stylesheet">
+    <link rel="stylesheet" href="{{ asset('frontend/css/magnific-popup/magnific-popup.css') }}">
+
+    <link rel="stylesheet" href="{{ asset('frontend/css/jquery.countdown.css') }}">
+
+    <link rel="stylesheet" href="{{ asset('frontend/css/style.css') }}">
+
+    <link rel="stylesheet" href="{{ asset('frontend/css/fontawesome/css/all.min.css')}}">
+
+    <link rel="stylesheet" href="{{ asset('frontend/css/nouislider.css')}}">
+
+    <link rel="stylesheet" href="{{ asset('assets/admin/datatables/dataTables.bootstrap4.min.css')}}">
+
+    <link rel="stylesheet" href="{{ asset('frontend/css/skin-demo-3.css') }}">
+    <link rel="stylesheet" href="{{ asset('frontend/css/demo-3.css') }}">
+ 
 </head>
 
 <body>
-    <!-- Topbar Start -->
-    @include('frontend.inc.topbar')
-    <!-- Topbar End -->
+    <div class="page-wrapper">
+        <!-- Header Start -->
+        @include('frontend.inc.header')
+        <!-- Header End -->
 
+        <!-- Main Content Start -->
+        <main class="main">
+            @yield('content')
+        </main>
+        <!-- Main Content End -->
+    
+        <!-- Footer Start -->
+        @include('frontend.inc.footer')
+        <!-- Footer End -->
+    </div>
 
-    <!-- Navbar Start -->
-    @include('frontend.inc.navbar')
-    <!-- Navbar End -->
+    <!-- Mobile Menu Start -->
 
+        @include('frontend.inc.mobile-menu')
 
-    <!-- Main Content Start -->
-    @yield('content')
-    <!-- Main Content End -->
-   
+    <!-- Mobile Menu End -->
 
-    <!-- Footer Start -->
-    @include('frontend.inc.footer')
-    <!-- Footer End -->
+    <script src="{{ asset('frontend/js/jquery.min.js') }}"></script>
 
+    <script src="{{ asset('frontend/js/bootstrap.bundle.min.js') }}"></script>
 
-    <!-- Back to Top -->
-    <a class="btn btn-primary back-to-top"><i class="fa fa-angle-double-up"></i></a>
+    <script src="{{ asset('frontend/js/jquery.hoverIntent.min.js') }}"></script>
 
+    <script src="{{ asset('frontend/js/jquery.waypoints.min.js') }}"></script>
 
-    <!-- JavaScript Libraries -->
-    <script src="{{ asset('assets/admin/js/jquery.min.js')}}"></script>
-    <script src="{{ asset('assets/admin/js/bootstrap.bundle.min.js')}}"></script>
-    <script src="{{ asset('assets/frontend/lib/easing/easing.min.js')}}"></script>
-    <script src="{{ asset('assets/frontend/lib/owlcarousel/owl.carousel.min.js')}}"></script>
-    <script src="{{ asset('assets/frontend/lib/sweet-alert/sweetalert.min.js')}}"></script>
-    <script src="{{ asset('assets/frontend/lib/jquery/jquery.dataTables.min.js')}}"></script>
-    <script src="{{ asset('assets/frontend/lib/moment/moment.min.js')}}"></script>
+    <script src="{{ asset('frontend/js/superfish.min.js') }}"></script>
 
+    <script src="{{ asset('frontend/js/owl.carousel.min.js') }}"></script>
 
-    <!-- Main Javascript -->
-    <script src="{{ asset('assets/frontend/js/main.js')}}"></script>
+    <script src="{{ asset('frontend/js/bootstrap-input-spinner.js') }}"></script>
+    
+    <script src="{{ asset('frontend/js/jquery.elevateZoom.min.js')}}"></script>
+
+    <script src="{{ asset('frontend/js/jquery.plugin.min.js') }}"></script>
+
+    <script src="{{ asset('frontend/js/jquery.magnific-popup.min.js') }}"></script>
+
+    <script src="{{ asset('frontend/js/jquery.countdown.min.js') }}"></script>
+
+    <script src="{{ asset('frontend/js/demo-4.js') }}"></script>
+
+    <script src="{{ asset('frontend/js/moment.min.js')}}"></script>
+
+    <script src="{{ asset('assets/admin/js/sweetalert.min.js')}}"></script>
+
+    <script src="{{ asset('frontend/js/nouislider.min.js')}}"></script>
+
+    <script src="{{ asset('frontend/js/wNumb.js')}}"></script>
+
+    <script src="{{ asset('frontend/js/main.js') }}"></script>
+
+    <!-- Data table js -->
+    <script src="{{ asset('assets/admin/datatables/jquery.dataTables.min.js')}}"></script>
+    <script src="{{ asset('assets/admin/datatables/dataTables.bootstrap4.min.js')}}"></script>
 
     @yield('script')
 
