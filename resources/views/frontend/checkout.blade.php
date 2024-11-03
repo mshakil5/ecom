@@ -11,41 +11,41 @@
             <h2 class="checkout-title">Billing Details</h2>
             <div class="row">
             <div class="col-md-6 form-group">
-                <label>First Name</label>
+                <label>First Name <span style="color: red;">*</span></label>
                 <input class="form-control" id="first_name" type="text" placeholder="John" value="{{ Auth::user()->name ?? '' }}">
             </div>
             <div class="col-md-6 form-group">
-                <label>Last Name</label>
+                <label>Last Name <span style="color: red;">*</span></label>
                 <input class="form-control" id="last_name" type="text" placeholder="Doe" value="{{ Auth::user()->surname ?? '' }}">
             </div>
             <div class="col-md-6 form-group">
-                <label>Email</label>
+                <label>Email <span style="color: red;">*</span></label>
                 <input class="form-control" id="email" type="email" placeholder="example@email.com" value="{{ Auth::user()->email ?? '' }}">
             </div>
             <div class="col-md-6 form-group">
-                <label>Phone</label>
+                <label>Phone <span style="color: red;">*</span></label>
                 <input class="form-control" id="phone" type="text" placeholder="+123 456 789" value="{{ Auth::user()->phone ?? '' }}">
             </div>
             <div class="col-md-6 form-group">
-                <label>House Number</label>
+                <label>House Number <span style="color: red;">*</span></label>
                 <input class="form-control" type="text" placeholder="123" id="house_number" value="{{ Auth::user()->house_number ?? '' }}">
             </div>
             <div class="col-md-6 form-group">
-                <label>Street Name</label>
+                <label>Street Name <span style="color: red;">*</span></label>
                 <input class="form-control" type="text" placeholder="123 Street" id="street_name" value="{{ Auth::user()->street_name ?? '' }}">
             </div>
             <div class="col-md-6 form-group">
-                <label>Town</label>
+                <label>Town <span style="color: red;">*</span></label>
                 <input class="form-control" type="text" placeholder="Dhaka" id="town" value="{{ Auth::user()->town ?? '' }}">
             </div>
             <div class="col-md-6 form-group">
-                <label>Postcode</label>
+                <label>Postcode <span style="color: red;">*</span></label>
                 <input class="form-control" type="text" placeholder="123" id="postcode" value="{{ Auth::user()->postcode ?? '' }}">
             </div>
             <div class="col-md-12">
                 <div class="form-group">
-                    <label for="address">Address</label>
-                    <textarea class="form-control" id="address" name="address" rows="3" placeholder="Enter your address" required>@auth {{ Auth::user()->address ?? '' }} @endauth</textarea>
+                    <label for="address">Note</label>
+                    <textarea class="form-control" id="note" name="note" rows="3" placeholder="Enter your  short note about your order"></textarea>
                 </div>
             </div>
             <div class="col-md-12 form-group">
@@ -55,6 +55,7 @@
                     </a>
                 @endguest
             </div>
+            {{--
             @if(auth()->check())
             <div class="col-md-12">
                 <div class="custom-control custom-checkbox">
@@ -63,6 +64,7 @@
                 </div>
             </div>
             @endif
+            --}}
             </div>
             <div class="collapse mb-5" id="shipping-address">
             <h2 class="checkout-title">Shipping Address</h2>
@@ -390,7 +392,7 @@
                 'street_name': $('#shipto').is(':checked') ? $('#ship_street_name').val() : $('#street_name').val(),
                 'town': $('#shipto').is(':checked') ? $('#ship_town').val() : $('#town').val(),
                 'postcode': $('#shipto').is(':checked') ? $('#ship_postcode').val() : $('#postcode').val(),
-                'address': $('#shipto').is(':checked') ? $('#ship_address').val() : $('#address').val(),
+                'note': $('#shipto').is(':checked') ? $('#ship_address').val() : $('#note').val(),
                 'delivery_location': $('input[name="delivery_location"]:checked').val(),
                 'payment_method': $('input[name="payment_method"]:checked').val(),
                 'discount_percentage': $('#couponType').text().includes('Percentage') ? $('#couponValue').text() : null,
@@ -429,7 +431,7 @@
                 }
             }
 
-            console.log(formData);
+            // console.log(formData);
 
             $.ajax({
                 url: '{{ route('place.order') }}',
@@ -472,22 +474,20 @@
                             $('#loader').hide();
                         });
                     } else if (formData.payment_method === 'paypal') {
-                            swal({
-                                text: "Please proceed to PayPal to complete your payment.",
-                                icon: "info",
-                                button: {
-                                    text: "OK",
-                                    className: "swal-button--confirm"
-                                }
-                            }).then(() => {
-                                localStorage.removeItem('cart');
-                                localStorage.removeItem('wishlist');
-                                window.open(response.redirectUrl, '_blank');
-                                window.location.href = '{{ route("frontend.homepage") }}';
-                            });
-                        } 
-
-                        else if(formData.payment_method === 'cashOnDelivery') {
+                        swal({
+                            text: "Please proceed to PayPal to complete your payment.",
+                            icon: "info",
+                            button: {
+                                text: "OK",
+                                className: "swal-button--confirm"
+                            }
+                        }).then(() => {
+                            // localStorage.removeItem('cart');
+                            // localStorage.removeItem('wishlist');
+                            window.open(response.redirectUrl, '_blank');
+                            window.location.href = '{{ route("frontend.homepage") }}';
+                        });
+                    } else if(formData.payment_method === 'cashOnDelivery') {
                         swal({
                                 text: "Order Placed Successfully. Thank you for shopping with us.",
                                 icon: "success",
@@ -501,8 +501,7 @@
                                 window.open(response.redirectUrl, '_blank');
                                 window.location.href = '{{ route("frontend.homepage") }}';
                             });
-                        }  
-                    else {
+                    } else {
                         localStorage.removeItem('cart');
                         localStorage.removeItem('wishlist');
                         updateCartCount();

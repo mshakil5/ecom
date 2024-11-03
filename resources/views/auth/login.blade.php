@@ -2,6 +2,16 @@
 
 @section('content')
 
+@if(session('session_clear'))
+<script>
+    localStorage.removeItem('wishlist');
+    localStorage.removeItem('cart');
+    @php
+        session()->forget('session_clear');
+    @endphp
+</script>
+@endif
+
 <div class="container mt-5 mb-5">
     <div class="form-box">
         <div class="form-tab">
@@ -20,14 +30,14 @@
                     <form name="loginForm" id="loginForm" method="POST" action="{{ route('login') }}">
                          @csrf
                         <div class="form-group mt-2">
-                            <label for="email">Your Email Address or Phone Number *</label>
+                            <label for="email">Your Email Address or Phone Number <span class="text-danger">*</span></label>
                             <input type="email" class="form-control" id="email" name="email" placeholder="john@example.com or +880xxxxxxxxxx" value="{{ old('email') }}" required />
                             <p class="help-block text-danger"></p>
                         </div>
 
                         <div class="form-group">
-                            <label for="password">Password *</label>
-                            <input type="password" class="form-control" id="password" name="password" placeholder="123456" required>
+                            <label for="password">Password <span class="text-danger">*</span></label>
+                            <input type="password" class="form-control" id="password" name="password" placeholder="" required>
                             <p class="help-block text-danger"></p>
                         </div>
 

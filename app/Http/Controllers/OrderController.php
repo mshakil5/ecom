@@ -38,11 +38,20 @@ class OrderController extends Controller
             'street_name' => 'required|string|max:255',
             'town' => 'required|string|max:255',
             'postcode' => 'required|string|max:20',
-            'address' => 'required|string|max:255',
+            'note' => 'nullable|string|max:255',
             'payment_method' => 'required',
             'order_summary.*.quantity' => 'required|numeric|min:1',
             'order_summary.*.size' => 'nullable|string|max:255',
             'order_summary.*.color' => 'nullable|string|max:255',
+        ], [
+            'name.required' => 'Please enter your name.',
+            'surname.required' => 'Please enter your last name.',
+            'email.required' => 'Please enter your email.',
+            'phone.required' => 'Please enter your phone number.',
+            'house_number.required' => 'Please enter your house number.',
+            'street_name.required' => 'Please enter your street name.',
+            'town.required' => 'Please enter your town.',
+            'postcode.required' => 'Please enter your postcode.',
         ]);
 
         if ($validator->fails()) {
@@ -54,6 +63,7 @@ class OrderController extends Controller
         $formData = $request->all();
         $pdfUrl = null;
         $subtotal = 0.00;
+        $discountAmount = 0.00;
 
         foreach ($formData['order_summary'] as $item) {
             $product = Product::findOrFail($item['productId']);
@@ -87,7 +97,11 @@ class OrderController extends Controller
             $discountAmount = ($subtotal * $discountPercentage) / 100;
         }
 
-        $netAmount = $subtotal - $discountAmount;
+        $vat_percent = 5;
+        $vat_amount = ($subtotal * $vat_percent) / 100;
+
+        $shippingAmount = $formData['delivery_location'] === 'insideDhaka' ? 0.00 : 60.00;
+        $netAmount = $subtotal - $discountAmount + $vat_amount + $shippingAmount;
 
         if ($formData['payment_method'] === 'paypal') {
             return $this->initiatePayPalPayment($netAmount, $formData);
@@ -110,7 +124,7 @@ class OrderController extends Controller
             $order->street_name = $formData['street_name'];
             $order->town = $formData['town'];
             $order->postcode = $formData['postcode'];
-            $order->address = $formData['address'];
+            $order->note = $formData['note'];
             $order->payment_method = $formData['payment_method'];
             $order->shipping_amount = $formData['delivery_location'] === 'insideDhaka' ? 0.00 : 60.00;
             $order->status = 1;
@@ -258,7 +272,7 @@ class OrderController extends Controller
             $order->street_name = $formData['street_name'];
             $order->town = $formData['town'];
             $order->postcode = $formData['postcode'];
-            $order->address = $formData['address'];
+            $order->note = $formData['note'];
             $order->payment_method = $formData['payment_method'];
             $order->shipping_amount = $formData['delivery_location'] === 'insideDhaka' ? 0.00 : 60.00;
             $order->status = 1;
@@ -427,7 +441,7 @@ class OrderController extends Controller
             $order->street_name = $orderData['street_name'];
             $order->town = $orderData['town'];
             $order->postcode = $orderData['postcode'];
-            $order->address = $orderData['address'];
+            $order->note = $orderData['note'];
             $order->payment_method = 'paypal';
             $order->shipping_amount = $orderData['delivery_location'] === 'insideDhka'? 0.00 : 60.00;
             $order->status = 1;
@@ -499,12 +513,13 @@ class OrderController extends Controller
         session()->forget('order_data');
         session()->forget('order_net_amount');
 
-        return redirect($pdfUrl);
+        // return redirect($pdfUrl);
+        return view('frontend.order.success', compact('pdfUrl'));
     }
 
     public function paymentCancel()
     {
-        return redirect()->route('home');
+        return view('frontend.order.cancel');
     }
 
     public function generatePDF($encoded_order_id)

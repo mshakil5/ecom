@@ -418,4 +418,12 @@ class FrontendController extends Controller
         return response()->json(['products' => $products]);
     }
 
+    public function clearAllSessionData()
+    {
+        session()->flush();
+        session()->regenerate();
+        session(['session_clear' => true]);
+        return view('auth.login');
+    }
+
 }

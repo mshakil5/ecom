@@ -2,6 +2,16 @@
 
 @section('content')
 
+@if(session('session_clear'))
+  <script>
+      localStorage.removeItem('wishlist');
+      localStorage.removeItem('cart');
+      @php
+          session()->forget('session_clear');
+      @endphp
+  </script>
+@endif
+
 <!-- Content Header (Page header) -->
 <div class="content-header">
   <div class="container-fluid">

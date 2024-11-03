@@ -7,41 +7,41 @@
     @csrf
     <div class="row">
         <div class="col-sm-6">
-            <label>Name *</label>
+            <label>Name <span class="text-danger">*</span></label>
             <input id="name" type="text" class="form-control" name="name" value="{{ $user->name }}" required autofocus>
         </div>
         <div class="col-sm-6">
-            <label>Email *</label>
+            <label>Email <span class="text-danger">*</span></label>
             <input id="email" type="email" class="form-control" name="email" value="{{ $user->email }}" required>
         </div>
     </div>
     <div class="row">
         <div class="col-sm-6">
-            <label>Phone *</label>
+            <label>Phone <span class="text-danger">*</span></label>
             <input id="phone" type="text" class="form-control" name="phone" value="{{ $user->phone }}" required>
         </div>
         <div class="col-sm-6">
-            <label>NID *</label>
+            <label>NID <span class="text-danger">*</span></label>
             <input id="nid" type="text" class="form-control" name="nid" value="{{ $user->nid }}">
         </div>
     </div>
     <div class="row">
         <div class="col-sm-6">
-            <label>House Number *</label>
+            <label>House Number <span class="text-danger">*</span></label>
             <input id="house_number" type="text" class="form-control" name="house_number" value="{{ $user->house_number }}">
         </div>
         <div class="col-sm-6">
-            <label>Street Name *</label>
+            <label>Street Name <span class="text-danger">*</span></label>
             <input id="street_name" type="text" class="form-control" name="street_name" value="{{ $user->street_name }}">
         </div>
     </div>
     <div class="row">
         <div class="col-sm-6">
-            <label>Town *</label>
+            <label>Town <span class="text-danger">*</span></label>
             <input id="town" type="text" class="form-control" name="town" value="{{ $user->town }}">
         </div>
         <div class="col-sm-6">
-            <label>Post Code *</label>
+            <label>Post Code <span class="text-danger">*</span></label>
             <input id="postcode" type="text" class="form-control" name="postcode" value="{{ $user->postcode }}">
         </div>
     </div>
@@ -56,7 +56,7 @@
         <input id="confirm_password" type="password" class="form-control" name="confirm_password">
         </div>
     </div>
-    <label>Address *</label>
+    <label>Address</label>
     <textarea class="form-control" id="address" name="address" rows="3" placeholder="Enter your address">@if (!empty($user->address)){!! $user->address !!}@endif</textarea>
 
     <button type="submit" class="btn btn-outline-primary-2">
@@ -85,6 +85,7 @@
                 success: function (response) {
                     if (response.status === 300) {
                         $(".ermsg").html(response.message).removeClass('alert-warning').addClass('alert-success');
+                        window.setTimeout(function(){location.reload()},3000)
                     } else {
                         $(".ermsg").html(response.message).removeClass('alert-success').addClass('alert-warning');
                     }

@@ -50,7 +50,10 @@
     <link rel="stylesheet" href="{{ asset('assets/admin/datatables/dataTables.bootstrap4.min.css')}}">
 
     <link rel="stylesheet" href="{{ asset('frontend/css/skin-demo-3.css') }}">
+
     <link rel="stylesheet" href="{{ asset('frontend/css/demo-3.css') }}">
+
+    <link rel="stylesheet" href="{{ asset('frontend/css/toastr.min.css') }}">
  
 </head>
 
@@ -65,7 +68,9 @@
             @yield('content')
         </main>
         <!-- Main Content End -->
-    
+
+        @include('frontend.modals.add_to_cart_modal')
+
         <!-- Footer Start -->
         @include('frontend.inc.footer')
         <!-- Footer End -->
@@ -113,13 +118,27 @@
 
     <!-- Data table js -->
     <script src="{{ asset('assets/admin/datatables/jquery.dataTables.min.js')}}"></script>
+
     <script src="{{ asset('assets/admin/datatables/dataTables.bootstrap4.min.js')}}"></script>
+
+    <script src="{{ asset('frontend/js/toastr.min.js')}}"></script>
 
     @yield('script')
 
     @include('frontend.partials.wishlist_script')
     @include('frontend.partials.add_to_cart_script')
     @include('frontend.partials.search_script')
+    @include('frontend.modals.add_to_cart_modal_script')
+
+    @if(session('session_clear'))
+        <script>
+            localStorage.removeItem('wishlist');
+            localStorage.removeItem('cart');
+            @php
+                session()->forget('session_clear');
+            @endphp
+        </script>
+    @endif
     
 </body>
 

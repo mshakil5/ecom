@@ -12,13 +12,30 @@
             var productId = $(this).data('product-id') || null;
             var offerId = $(this).data('offer-id');
             var price = $(this).data('price');
-            var campaignId = $(this).data('campaign-id') || null;
-            var supplierId = $(this).data('supplier-id') || null;
-            var bogoId = $(this).data('bogo-id') || null;
-            var bundleId = $(this).data('bundle-id') || null;
 
-            var selectedSize = $('input[name="size"]:checked').val() || 'M';
-            var selectedColor = $('input[name="color"]:checked').val() || 'Black'; 
+            var selectedSize = $('input[name="size"]:checked').val();
+            var selectedColor = $('input[name="color"]:checked').val();  
+
+            if (!selectedSize) {
+                toastr.error("Please select a size.", "Error", {
+                    closeButton: true,
+                    progressBar: true,
+                    timeOut: 3000,
+                    positionClass: "toast-top-right",
+                });
+                return;
+            }
+
+            if (!selectedColor) {
+                toastr.error("Please select a color.", "Error", {
+                    closeButton: true,
+                    progressBar: true,
+                    timeOut: 3000,
+                    positionClass: "toast-top-right",
+                });
+                return;
+            }
+
             var quantity = parseInt($('.quantity-input').val()) || 1;
 
             var cart = JSON.parse(localStorage.getItem('cart')) || [];
@@ -27,10 +44,7 @@
                 return item.productId === productId && 
                        item.size === selectedSize && 
                        item.color === selectedColor && 
-                       item.offerId === offerId && 
-                       item.bogoId === bogoId && 
-                       item.supplierId === supplierId &&
-                       item.campaignId === campaignId;
+                       item.offerId === offerId;
             });
 
             if (existingItem) {
@@ -42,11 +56,7 @@
                     price: price,
                     size: selectedSize,
                     color: selectedColor,
-                    quantity: quantity,
-                    supplierId: supplierId,
-                    bogoId: bogoId,
-                    bundleId: bundleId,
-                    campaignId: campaignId
+                    quantity: quantity
                 };
                 cart.push(cartItem);
             }
@@ -56,14 +66,13 @@
 
             // console.log(JSON.parse(localStorage.getItem('cart')));
 
-            swal({
-                text: "Added to cart",
-                icon: "success",
-                button: {
-                    text: "OK",
-                    className: "swal-button--confirm"
-                }
+            toastr.success("Added to cart", "Success", {
+                closeButton: true, 
+                progressBar: true,
+                timeOut: 3000,
+                positionClass: "toast-top-right",
             });
+            $('#quickAddToCartModal').modal('hide');
         });
 
         $(document).on('click', '.remove-from-cart', function() {
@@ -82,13 +91,11 @@
                         cart: JSON.stringify(cart)
                     },
                     success: function() {
-                        swal({
-                            text: "Removed from cart",
-                            icon: "success",
-                            button: {
-                                text: "OK",
-                                className: "swal-button--confirm"
-                            }
+                        toastr.success("Removed from cart", "Success", {
+                            closeButton: true, 
+                            progressBar: true,
+                            timeOut: 3000,
+                            positionClass: "toast-top-right",
                         });
                         updateCartCount();
                     }

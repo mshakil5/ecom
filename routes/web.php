@@ -30,6 +30,8 @@ Route::fallback(function () {
     return redirect('/');
 });
   
+
+Route::get('/clear-session', [FrontendController::class, 'clearAllSessionData'])->name('clearSessionData');
   
 // Frontend
 Route::get('/', [FrontendController::class, 'index'])->name('frontend.homepage');
