@@ -45,6 +45,7 @@ Route::get('/category-products', [FrontendController::class, 'getCategoryProduct
 //Check Coupon
 Route::get('/check-coupon', [FrontendController::class, 'checkCoupon']);
 
+Route::get('/order/success', [OrderController::class, 'orderSuccess'])->name('order.success');
 
 Route::get('/special-offers/{slug}', [SpecialOfferController::class, 'show'])->name('special-offers.show');
 

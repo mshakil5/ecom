@@ -213,6 +213,7 @@
                     <div id="couponDetails" class="mt-2 alert alert-success" style="display: none;">
                         <strong>Coupon Applied!</strong>
                     </div>
+                    <input type="hidden" id="couponId" name="coupon_id" value="">
                      <div style="display: none;">
                         <span id="couponValue"></span> <span id="couponType"></span>
                      </div>
@@ -398,6 +399,7 @@
                 'discount_percentage': $('#couponType').text().includes('Percentage') ? $('#couponValue').text() : null,
                 'discount_amount': $('#couponType').text().includes('Fixed Amount') ? $('#couponValue').text() : null,
                 'order_summary': {!! json_encode($cart) !!},
+                'coupon_id': $('#couponId').val(),
                 '_token': '{{ csrf_token() }}'
             };
 
@@ -439,17 +441,9 @@
                 data: formData,
                 success: function(response) {
 
-                    swal({
-                        text: "Order Placed Successfully. Thank you for shopping with us.",
-                        icon: "success",
-                        button: {
-                            text: "OK",
-                            className: "swal-button--confirm"
-                        }
-                    }).then(() => {
-                        window.open(response.pdf_url, '_blank');
-                        window.location.href = '{{ route('frontend.homepage') }}';
-                    });
+                    if (response.pdf_url) {
+                        window.location.href = response.pdf_url;
+                    }
 
                     if (formData.payment_method === 'stripe') {
                         stripe.confirmCardPayment(response.client_secret, {
@@ -466,41 +460,21 @@
                                     localStorage.removeItem('cart');
                                     localStorage.removeItem('wishlist');
                                     updateCartCount();
-                                    window.open(response.redirectUrl, '_blank');
-                                    window.location.href = '{{ route("frontend.homepage") }}';
+                                    window.location.href = response.redirectUrl;
                                 }
                             }
                         }).finally(function() {
                             $('#loader').hide();
                         });
                     } else if (formData.payment_method === 'paypal') {
-                        swal({
-                            text: "Please proceed to PayPal to complete your payment.",
-                            icon: "info",
-                            button: {
-                                text: "OK",
-                                className: "swal-button--confirm"
-                            }
-                        }).then(() => {
-                            // localStorage.removeItem('cart');
-                            // localStorage.removeItem('wishlist');
-                            window.open(response.redirectUrl, '_blank');
-                            window.location.href = '{{ route("frontend.homepage") }}';
-                        });
+                        window.location.href = response.redirectUrl;
                     } else if(formData.payment_method === 'cashOnDelivery') {
-                        swal({
-                                text: "Order Placed Successfully. Thank you for shopping with us.",
-                                icon: "success",
-                                button: {
-                                    text: "OK",
-                                    className: "swal-button--confirm"
-                                }
-                            }).then(() => {
-                                localStorage.removeItem('cart');
-                                localStorage.removeItem('wishlist');
-                                window.open(response.redirectUrl, '_blank');
-                                window.location.href = '{{ route("frontend.homepage") }}';
-                            });
+                        if (response.success) {
+                            localStorage.removeItem('cart');
+                            localStorage.removeItem('wishlist');
+                            updateCartCount();
+                            window.location.href = response.redirectUrl;
+                        }
                     } else {
                         localStorage.removeItem('cart');
                         localStorage.removeItem('wishlist');
@@ -531,24 +505,26 @@
         $('#applyCoupon').click(function(e) {
             e.preventDefault();
             var couponName = $('#couponName').val();
+            var guest_email = $('#email').val();
 
             $.ajax({
                 url: '/check-coupon',
                 type: 'GET',
-                data: { coupon_name: couponName },
+                data: { guest_email: guest_email, coupon_name: couponName },
                 success: function(response) {
                     if (response.success) {
                         $('#couponDetails').show();
                         $('#couponType').text(response.coupon_type === 1 ? 'Fixed Amount' : 'Percentage');
                         $('#couponValue').text(response.coupon_value);
+                        $('#couponId').val(response.coupon_id);
                         updateTotal();
-                        swal("Valid Coupon", "Coupon applied successfully!", "success");
+                        toastr.success("Valid Coupon", "Coupon applied successfully!", "success");
                     } else {
-                        swal("Invalid Coupon", "Please enter a valid coupon.", "error");
+                        toastr.error(response.message, "Coupon Error");
                     }
                 },
                 error: function() {
-                    swal("Error", "Error applying coupon.", "error");
+                    toastr.error("Error", "Error applying coupon.", "error");
                 }
             });
         });
