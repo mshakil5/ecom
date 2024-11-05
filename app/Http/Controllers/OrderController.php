@@ -26,6 +26,10 @@ use Stripe\PaymentIntent;
 use Carbon\Carbon;
 use App\Models\CouponUsage;
 use App\Models\Coupon;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\OrderConfirmation;
+use App\Models\ContactEmail;
+use App\Mail\OrderStatusChangedMail;
 
 class OrderController extends Controller
 {
@@ -142,6 +146,11 @@ class OrderController extends Controller
                 }
     
                 $order->save();
+
+                $encoded_order_id = base64_encode($order->id);
+                $pdfUrl = route('generate-pdf', ['encoded_order_id' => $encoded_order_id]);
+
+                $this->sendOrderEmail($order, $pdfUrl);
 
                 if ($order->discount_amount > 0 && isset($formData['coupon_id'])) {
                     $couponUsage = new CouponUsage();
@@ -313,6 +322,8 @@ class OrderController extends Controller
 
             $encoded_order_id = base64_encode($order->id);
             $pdfUrl = route('generate-pdf', ['encoded_order_id' => $encoded_order_id]);
+
+            $this->sendOrderEmail($order, $pdfUrl);
 
             if ($order->discount_amount > 0 && isset($formData['coupon_id'])) {
                 $couponUsage = new CouponUsage();
@@ -498,6 +509,11 @@ class OrderController extends Controller
 
             $order->save();
 
+            $encoded_order_id = base64_encode($order->id);
+            $pdfUrl = route('generate-pdf', ['encoded_order_id' => $encoded_order_id]);
+
+            $this->sendOrderEmail($order, $pdfUrl);
+
             if ($order->discount_amount > 0 && isset($formData['coupon_id'])) {
                 $couponUsage = new CouponUsage();
                 $couponUsage->coupon_id = $formData['coupon_id'];
@@ -576,6 +592,16 @@ class OrderController extends Controller
     public function paymentCancel()
     {
         return view('frontend.order.cancel');
+    }
+
+    protected function sendOrderEmail($order, $pdfUrl)
+    {
+        Mail::to($order->email)->send(new OrderConfirmation($order, $pdfUrl));
+
+        $contactEmails = ContactEmail::where('status', 1)->pluck('email');
+        foreach ($contactEmails as $email) {
+            Mail::to($email)->send(new OrderConfirmation($order, $pdfUrl));
+        }
     }
 
     public function orderSuccess(Request $request)
@@ -793,6 +819,18 @@ class OrderController extends Controller
             $order->save();
 
             return response()->json(['success' => true, 'message' => 'Order status updated successfully!']);
+        }
+
+        $emailToSend = $order->email ?? $order->user->email;
+
+        if ($emailToSend) {
+            Mail::to($emailToSend)->send(new OrderStatusChangedMail($order));
+        }
+
+        $contactEmails = ContactEmail::where('status', 1)->pluck('email');
+
+        foreach ($contactEmails as $email) {
+            Mail::to($email)->send(new OrderStatusChangedMail($order));
         }
 
         return response()->json(['success' => false, 'message' => 'Order not found.'], 404);

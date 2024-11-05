@@ -11,6 +11,9 @@ use App\Models\OrderDetails;
 use App\Models\Stock;
 use App\Models\CompanyDetails;
 use PDF;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\OrderConfirmation;
+use App\Models\ContactEmail;
 
 class InHouseSellController extends Controller
 {
@@ -81,6 +84,14 @@ class InHouseSellController extends Controller
 
         $encoded_order_id = base64_encode($order->id);
         $pdfUrl = route('in-house-sell.generate-pdf', ['encoded_order_id' => $encoded_order_id]);
+
+        Mail::to($order->user->email)->send(new OrderConfirmation($order, $pdfUrl));
+
+        $contactEmails = ContactEmail::where('status', 1)->pluck('email');
+
+        foreach ($contactEmails as $email) {
+            Mail::to($email)->send(new OrderConfirmation($order, $pdfUrl));
+        }
 
         return response()->json([
             'pdf_url' => $pdfUrl,

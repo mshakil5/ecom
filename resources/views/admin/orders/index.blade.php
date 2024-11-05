@@ -85,6 +85,30 @@
         </div>
     </div>
 </section>
+
+<div id='loading' style='display:none ;'>
+    <img src="{{ asset('loader.gif') }}" id="loading-image" alt="Loading..." />
+</div>
+
+<style>
+    #loading {
+    position: fixed;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    opacity: 0.7;
+    background-color: #fff;
+    z-index: 99;
+}
+
+    #loading-image {
+        z-index: 100;
+    }
+</style>
 @endsection
 
 @section('script')
@@ -109,6 +133,9 @@
                     order_id: orderId,
                     status: status
                 },
+                beforeSend: function() {
+                    $('#loading').show();
+                },
                 success: function(response) {
                     swal({
                         text: "Status changed",
@@ -123,6 +150,9 @@
                 },
                 error: function(xhr, status, error) {
                     console.log(xhr.responseText);
+                },
+                complete: function() {
+                    $('#loading').hide();
                 }
             });
         });
