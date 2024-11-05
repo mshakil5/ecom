@@ -35,10 +35,24 @@
 @section('script')
 <script>
     $(function () {
+
+        var couponId = '{{ $couponId }}';
+
         $('#pending-orders-table').DataTable({
             processing: true,
             serverSide: true,
-            ajax: "{{ route('allorders') }}",
+            ajax: {
+                url: "{{ route('getallorderbycoupon', ':couponId') }}".replace(':couponId', couponId),
+                type: 'GET',
+                data: function (d) {
+                    if (couponId) {
+                        d.couponId = couponId;
+                    }
+                },
+                error: function (xhr, error, thrown) {
+                    console.error(xhr.responseText);
+                }
+            },
             pageLength: 100,
             columns: [
                 { data: 'purchase_date', name: 'purchase_date' },

@@ -31,13 +31,13 @@
                             <div class="row">
                                 <div class="col-sm-12">
                                     <div class="form-group">
-                                        <label>Coupon Name<span style="color: red;">*</span></label>
+                                        <label>Coupon Name*</label>
                                         <input type="text" class="form-control" id="coupon_name" name="coupon_name" placeholder="Enter coupon name">
                                     </div>
                                 </div>
-                                <div class="col-sm-12">
+                                <div class="col-sm-6">
                                     <div class="form-group">
-                                        <label>Coupon Type<span style="color: red;">*</span></label>
+                                        <label>Coupon Type*</label>
                                         <select class="form-control" id="coupon_type">
                                             <option value="">Select Coupon Type</option>
                                             <option value="1">Fixed Amount</option>
@@ -45,10 +45,23 @@
                                         </select>
                                     </div>
                                 </div>
-                                <div class="col-sm-12">
+                                <div class="col-sm-6">
                                     <div class="form-group">
-                                        <label>Coupon Value<span style="color: red;">*</span></label>
+                                        <label>Coupon Value*</label>
                                         <input type="number" class="form-control" id="coupon_value" placeholder="Enter coupon value">
+                                    </div>
+                                </div>
+                                <div class="col-sm-6">
+                                    <div class="form-group">
+                                        <label>Max Use Per User*</label>
+                                        <input type="number" class="form-control" id="max_use_per_user" placeholder="Enter max use per user" required min="1">
+                                    </div>
+                                </div>
+
+                                <div class="col-sm-6">
+                                    <div class="form-group">
+                                        <label>Total Max Use*</label>
+                                        <input type="number" class="form-control" id="total_max_use" placeholder="Enter total max use" required min="1">
                                     </div>
                                 </div>
                             </div>
@@ -80,6 +93,9 @@
                                     <th>Name</th>
                                     <th>Coupon Type</th>
                                     <th>Value</th>
+                                    <th>Max Use Per User</th>
+                                    <th>Total Max Use</th>
+                                    <th>Orders</th>
                                     <th>Status</th>
                                     <th>Action</th>
                                 </tr>
@@ -97,6 +113,14 @@
                                         @endif
                                     </td>
                                     <td>{{ $data->coupon_value }}</td>
+                                    <td>{{ $data->max_use_per_user }}</td>
+                                    <td>{{ $data->total_max_use }}</td>
+                                    <td>
+                                        <a href="{{ route('getallorderbycoupon', $data->id) }}" title="View Orders">
+                                            <i class="fa fa-shopping-cart" style="color: #2196f3; font-size:16px;"></i>
+                                        </a>
+                                    </td>
+
                                     <td>
                                         <div class="custom-control custom-switch">
                                             <input type="checkbox" class="custom-control-input toggle-status" id="customSwitchStatus{{ $data->id }}" data-id="{{ $data->id }}" {{ $data->status == 1 ? 'checked' : '' }}>
@@ -161,7 +185,7 @@
                 },
                 success: function(d) {
                     swal({
-                        text: "Status updated",
+                        text: "Status Chnaged successfully",
                         icon: "success",
                         button: {
                             text: "OK",
@@ -205,6 +229,8 @@
               form_data.append("coupon_name", $("#coupon_name").val());
               form_data.append("coupon_type", $("#coupon_type").val());
               form_data.append("coupon_value", $("#coupon_value").val());
+              form_data.append("max_use_per_user", $("#max_use_per_user").val());
+              form_data.append("total_max_use", $("#total_max_use").val());
 
               $.ajax({
                 url: url,
@@ -217,7 +243,7 @@
                         $(".ermsg").html(d.message);
                     }else if(d.status == 300){
                         swal({
-                            text: "Created Successfully",
+                            text: "Created successfully",
                             icon: "success",
                             button: {
                                 text: "OK",
@@ -241,6 +267,8 @@
               form_data.append("coupon_name", $("#coupon_name").val());
               form_data.append("coupon_type", $("#coupon_type").val());
               form_data.append("coupon_value", $("#coupon_value").val());
+              form_data.append("max_use_per_user", $("#max_use_per_user").val());
+              form_data.append("total_max_use", $("#total_max_use").val());
               form_data.append("codeid", $("#codeid").val());
               
               $.ajax({
@@ -257,7 +285,7 @@
                           pagetop();
                       }else if(d.status == 300){
                           swal({
-                            text: "Updated Successfully",
+                            text: "Updated successfully",
                             icon: "success",
                             button: {
                                 text: "OK",
@@ -301,15 +329,15 @@
                 success: function(d){
                     if(d.success) {
                         swal({
-                          text: "Deleted",
-                          icon: "success",
-                          button: {
-                              text: "OK",
-                              className: "swal-button--confirm"
-                          }
-                      }).then(() => {
-                          location.reload();
-                      });
+                            text: "Deleted",
+                            icon: "success",
+                            button: {
+                                text: "OK",
+                                className: "swal-button--confirm"
+                            }
+                        }).then(() => {
+                            location.reload();
+                        });
                     }
                 },
                 error:function(d){
@@ -322,6 +350,8 @@
           $("#coupon_name").val(data.coupon_name);
           $("#coupon_type").val(data.coupon_type);
           $("#coupon_value").val(data.coupon_value);
+          $("#max_use_per_user").val(data.max_use_per_user);
+          $("#total_max_use").val(data.total_max_use);
           $("#codeid").val(data.id);
           $("#addBtn").val('Update');
           $("#addBtn").html('Update');

@@ -199,8 +199,7 @@ Route::group(['prefix' =>'admin/', 'middleware' => ['auth', 'is_admin']], functi
     Route::post('/ads-status', [AdController::class, 'toggleStatus']);
 
     //Orders
-    Route::get('/all-order', [OrderController::class, 'allOrder'])->name('allorder');
-    Route::get('/all-orders', [OrderController::class, 'allOrders'])->name('allorders');
+    Route::get('/all-order', [OrderController::class, 'allOrder'])->name('allorders');
     Route::get('/pending-orders', [OrderController::class, 'pendingOrders'])->name('pendingorders');
     Route::get('/processing-orders', [OrderController::class, 'processingOrders'])->name('processingorders');
     Route::get('/packed-orders', [OrderController::class, 'packedOrders'])->name('packedorders');
@@ -208,6 +207,8 @@ Route::group(['prefix' =>'admin/', 'middleware' => ['auth', 'is_admin']], functi
     Route::get('/delivered-orders', [OrderController::class, 'deliveredOrders'])->name('deliveredorders');
     Route::get('/returned-orders', [OrderController::class, 'returnedOrders'])->name('returnedorders');
     Route::get('/cancelled-orders', [OrderController::class, 'cancelledOrders'])->name('cancelledorders');
+
+    Route::get('/coupon-all-orders/{couponId}', [OrderController::class, 'getAllOrderByCoupon'])->name('getallorderbycoupon');
 
     Route::post('/send-to-stock', [StockController::class, 'sendToStock'])->name('send.to.stock');
     Route::post('/send-to-systemlose', [StockController::class, 'sendToSystemLose'])->name('send.to.systemlose');

@@ -24,6 +24,7 @@ use Exception;
 use Stripe\Stripe;
 use Stripe\PaymentIntent;
 use Carbon\Carbon;
+use App\Models\CouponUsage;
 
 class OrderController extends Controller
 {
@@ -545,59 +546,121 @@ class OrderController extends Controller
         return view('user.orders', compact('orders'));
     }
 
-    public function allOrders()
+    public function allOrder(Request $request)
     {
+        if ($request->ajax()) {
+            
+        return DataTables::of(Order::with('user')
+            ->where('order_type',0)
+            ->orderBy('id', 'desc'))
+            ->addColumn('action', function($order){
+                return '<a href="'.route('admin.orders.details', ['orderId' => $order->id]).'" class="btn btn-primary">Details</a>';
+            })
+            ->editColumn('subtotal_amount', function ($order) {
+                return number_format($order->subtotal_amount, 2);
+            })
+            ->editColumn('shipping_amount', function ($order) {
+                return number_format($order->shipping_amount, 2);
+            })
+            ->editColumn('discount_amount', function ($order) {
+                return number_format($order->discount_amount, 2);
+            })
+            ->editColumn('net_amount', function ($order) {
+                return number_format($order->net_amount, 2);
+            })
+            ->editColumn('status', function ($order) {
+                $statusLabels = [
+                    1 => 'Pending',
+                    2 => 'Processing',
+                    3 => 'Packed',
+                    4 => 'Shipped',
+                    5 => 'Delivered',
+                    6 => 'Returned',
+                    7 => 'Cancelled'
+                ];
+                return isset($statusLabels[$order->status]) ? $statusLabels[$order->status] : 'Unknown';
+            })
+            ->editColumn('payment_method', function ($order) {
+                $paymentMethods = [
+                    'cashOnDelivery' => 'Cash On Delivery',
+                    'stripe' => 'Stripe',
+                    'paypal' => 'PayPal',
+                ];
+                return isset($paymentMethods[$order->payment_method]) ? $paymentMethods[$order->payment_method] : $order->payment_method;
+            })
+            ->editColumn('purchase_date', function ($order) {
+                return Carbon::parse($order->purchase_date)->format('d-m-Y');
+            })
+            ->addColumn('contact_info', function ($order) {
+                return $order->name . '<br>' . $order->email . '<br>' . $order->phone;
+            })
+            ->rawColumns(['action', 'contact_info'])
+            ->make(true);
+        }
+
         return view('admin.orders.all');
     }
 
-    public function allOrder()
+    public function getallorderbycoupon(Request $request, $couponId)
     {
-        return DataTables::of(Order::with('user')
-                        ->where('order_type',0)
-                        ->orderBy('id', 'desc'))
-                        ->addColumn('action', function($order){
-                            return '<a href="'.route('admin.orders.details', ['orderId' => $order->id]).'" class="btn btn-primary">Details</a>';
-                        })
-                        ->editColumn('subtotal_amount', function ($order) {
-                            return number_format($order->subtotal_amount, 2);
-                        })
-                        ->editColumn('shipping_amount', function ($order) {
-                            return number_format($order->shipping_amount, 2);
-                        })
-                        ->editColumn('discount_amount', function ($order) {
-                            return number_format($order->discount_amount, 2);
-                        })
-                        ->editColumn('net_amount', function ($order) {
-                            return number_format($order->net_amount, 2);
-                        })
-                        ->editColumn('status', function ($order) {
-                            $statusLabels = [
-                                1 => 'Pending',
-                                2 => 'Processing',
-                                3 => 'Packed',
-                                4 => 'Shipped',
-                                5 => 'Delivered',
-                                6 => 'Returned',
-                                7 => 'Cancelled'
-                            ];
-                            return isset($statusLabels[$order->status]) ? $statusLabels[$order->status] : 'Unknown';
-                        })
-                        ->editColumn('payment_method', function ($order) {
-                            $paymentMethods = [
-                                'cashOnDelivery' => 'Cash On Delivery',
-                                'stripe' => 'Stripe',
-                                'paypal' => 'PayPal',
-                            ];
-                            return isset($paymentMethods[$order->payment_method]) ? $paymentMethods[$order->payment_method] : $order->payment_method;
-                        })
-                        ->editColumn('purchase_date', function ($order) {
-                            return Carbon::parse($order->purchase_date)->format('d-m-Y');
-                        })
-                        ->addColumn('contact_info', function ($order) {
-                            return $order->name . '<br>' . $order->email . '<br>' . $order->phone;
-                        })
-                        ->rawColumns(['action', 'contact_info'])
-                        ->make(true);
+        if ($request->ajax()) {
+          
+            $couponUsages = CouponUsage::where('coupon_id', $couponId)
+            ->pluck('order_id'); 
+
+            $orders = Order::with('user')
+            ->where('order_type',0)
+            ->whereIn('id', $couponUsages)
+            ->orderBy('id', 'desc')
+            ->get();
+
+        return DataTables::of($orders)
+            ->addColumn('action', function($order){
+                return '<a href="'.route('admin.orders.details', ['orderId' => $order->id]).'" class="btn btn-primary">Details</a>';
+            })
+            ->editColumn('subtotal_amount', function ($order) {
+                return number_format($order->subtotal_amount, 2);
+            })
+            ->editColumn('shipping_amount', function ($order) {
+                return number_format($order->shipping_amount, 2);
+            })
+            ->editColumn('discount_amount', function ($order) {
+                return number_format($order->discount_amount, 2);
+            })
+            ->editColumn('net_amount', function ($order) {
+                return number_format($order->net_amount, 2);
+            })
+            ->editColumn('status', function ($order) {
+                $statusLabels = [
+                    1 => 'Pending',
+                    2 => 'Processing',
+                    3 => 'Packed',
+                    4 => 'Shipped',
+                    5 => 'Delivered',
+                    6 => 'Returned',
+                    7 => 'Cancelled'
+                ];
+                return isset($statusLabels[$order->status]) ? $statusLabels[$order->status] : 'Unknown';
+            })
+            ->editColumn('payment_method', function ($order) {
+                $paymentMethods = [
+                    'cashOnDelivery' => 'Cash On Delivery',
+                    'stripe' => 'Stripe',
+                    'paypal' => 'PayPal',
+                ];
+                return isset($paymentMethods[$order->payment_method]) ? $paymentMethods[$order->payment_method] : $order->payment_method;
+            })
+            ->editColumn('purchase_date', function ($order) {
+                return Carbon::parse($order->purchase_date)->format('d-m-Y');
+            })
+            ->addColumn('contact_info', function ($order) {
+                return $order->name . '<br>' . $order->email . '<br>' . $order->phone;
+            })
+            ->rawColumns(['action', 'contact_info'])
+            ->make(true);
+        }
+
+        return view('admin.orders.coupon', compact('couponId'));
     }
 
     public function pendingOrders()
