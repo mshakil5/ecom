@@ -70,7 +70,7 @@
     @endif
     <!-- Intro Slider End -->
 
-    <div class="mb-5"></div>
+    <div class="mb-7"></div>
 
     <!-- Special Offer Start -->
     @if($section_status->special_offer == 1)
@@ -160,6 +160,19 @@
                                     <img src="{{ asset('images/products/' . $product->feature_image) }}" alt="{{ $product->name }}" class="product-image">
                                 </a>
                                 @if ($product->stock && $product->stock->quantity > 0)
+
+                                @php
+                                $colors = $product->stock()
+                                    ->where('quantity', '>', 0)
+                                    ->distinct('color')
+                                    ->pluck('color');
+
+                                $sizes = $product->stock()
+                                    ->where('quantity', '>', 0)
+                                    ->distinct('size')
+                                    ->pluck('size');
+                                @endphp
+
                                     <div class="product-action-vertical">
                                         <a href="#" class="btn-product-icon btn-wishlist add-to-wishlist btn-expandable" 
                                         title="Add to wishlist" 
@@ -174,7 +187,9 @@
                                         data-offer-id="0" 
                                         data-price="{{ $product->price }}" 
                                         data-toggle="modal" data-target="#quickAddToCartModal" 
-                                        data-image ="{{ asset('images/products/' . $product->feature_image) }}" data-stock="{{ $product->stock->quantity }}">
+                                        data-image ="{{ asset('images/products/' . $product->feature_image) }}" data-stock="{{ $product->stock->quantity }}"
+                                        data-colors="{{ $colors->toJson() }}"
+                                        data-sizes="{{ $sizes->toJson() }}">
                                             <span>add to cart</span>
                                         </a>
                                     </div>
@@ -264,6 +279,19 @@
                                 <img src="{{ asset('images/products/' . $product->feature_image) }}" alt="{{ $product->name }}" class="product-image">
                             </a>
                             @if ($product->stock && $product->stock->quantity > 0)
+
+                                @php
+                                $colors = $product->stock()
+                                    ->where('quantity', '>', 0)
+                                    ->distinct('color')
+                                    ->pluck('color');
+
+                                $sizes = $product->stock()
+                                    ->where('quantity', '>', 0)
+                                    ->distinct('size')
+                                    ->pluck('size');  
+                                @endphp
+
                                 <div class="product-action-vertical">
                                     <a href="#" class="btn-product-icon btn-wishlist add-to-wishlist btn-expandable" title="Add to wishlist" data-product-id="{{ $product->id }}" data-offer-id="0" data-price="{{ $product->price }}">
                                         <span>Add to wishlist</span>
@@ -275,7 +303,9 @@
                                     data-offer-id="0" 
                                     data-price="{{ $product->price }}" 
                                     data-toggle="modal" data-target="#quickAddToCartModal" 
-                                    data-image ="{{ asset('images/products/' . $product->feature_image) }}" data-stock="{{ $product->stock->quantity }}">
+                                    data-image ="{{ asset('images/products/' . $product->feature_image) }}" data-stock="{{ $product->stock->quantity }}"
+                                    data-colors="{{ $colors->toJson() }}"
+                                     data-sizes="{{ $sizes->toJson() }}">
                                         <span>add to cart</span>
                                     </a>
                                 </div>
@@ -363,6 +393,18 @@
                                 <img src="{{ asset('images/products/' . $product->feature_image) }}" alt="{{ $product->name }}" class="product-image">
                             </a>
                             @if ($product->stock && $product->stock->quantity > 0)
+                                @php
+                                $colors = $product->stock()
+                                    ->where('quantity', '>', 0)
+                                    ->distinct('color')
+                                    ->pluck('color');
+
+                                $sizes = $product->stock()
+                                    ->where('quantity', '>', 0)
+                                    ->distinct('size')
+                                    ->pluck('size');  
+                                @endphp
+                                
                                 <div class="product-action-vertical">
                                     <a href="#" class="btn-product-icon btn-wishlist add-to-wishlist btn-expandable" title="Add to wishlist" data-product-id="{{ $product->id }}" data-offer-id="0" data-price="{{ $product->price }}">
                                         <span>Add to wishlist</span>
@@ -374,7 +416,8 @@
                                     data-offer-id="0" 
                                     data-price="{{ $product->price }}" 
                                     data-toggle="modal" data-target="#quickAddToCartModal" 
-                                    data-image ="{{ asset('images/products/' . $product->feature_image) }}" data-stock="{{ $product->stock->quantity }}">
+                                    data-image ="{{ asset('images/products/' . $product->feature_image) }}" data-stock="{{ $product->stock->quantity }}"
+                                    data-colors="{{ $colors->toJson() }}" data-sizes="{{ $sizes->toJson() }}">
                                         <span>add to cart</span>
                                     </a>
                                 </div>
@@ -441,6 +484,17 @@
                             </a>
                             @if ($product->stock && $product->stock->quantity > 0)
 
+                                @php
+                                $colors = $product->stock()
+                                    ->where('quantity', '>', 0)
+                                    ->distinct('color')
+                                    ->pluck('color');
+
+                                $sizes = $product->stock()
+                                    ->where('quantity', '>', 0)
+                                    ->distinct('size')
+                                    ->pluck('size');  
+                                @endphp
                                 <div class="product-action-vertical">
                                     <a href="#" class="btn-product-icon btn-wishlist add-to-wishlist btn-expandable" title="Add to wishlist" data-product-id="{{ $product->id }}" data-offer-id="0" data-price="{{ $product->price }}">
                                         <span>Add to wishlist</span>
@@ -452,7 +506,8 @@
                                     data-offer-id="0" 
                                     data-price="{{ $product->price }}" 
                                     data-toggle="modal" data-target="#quickAddToCartModal" 
-                                    data-image ="{{ asset('images/products/' . $product->feature_image) }}" data-stock="{{ $product->stock->quantity }}">
+                                    data-image ="{{ asset('images/products/' . $product->feature_image) }}" data-stock="{{ $product->stock->quantity }}"
+                                    data-colors="{{ $colors->toJson() }}" data-sizes="{{ $sizes->toJson() }}">
                                         <span>add to cart</span>
                                     </a>
                                 </div>
@@ -574,84 +629,73 @@
 
 @section('script')
 
-    <script>
-        $(document).ready(function() {
-            $('.related-carousel').each(function() {
-                var $carousel = $(this);
-                var categoryId = $carousel.data('category-id');
-                var page = $carousel.data('page');
-                var isLoading = false;
+<script>
+    $(document).ready(function() {
+        $('.related-carousel').each(function() {
+            var $carousel = $(this);
+            var categoryId = $carousel.data('category-id');
+            var page = $carousel.data('page');
+            var isLoading = false;
 
-                $carousel.on('changed.owl.carousel', function(event) {
-                    if (event.item.index + event.page.size >= event.item.count && !isLoading) {
-                        isLoading = true;
-                        $.ajax({
-                            url: '{{ route('getCategoryProducts') }}',
-                            method: 'GET',
-                            data: {
-                                category_id: categoryId,
-                                page: page
-                            },
-                            success: function(response) {
-                                // console.log(response);
-                                page++;
-                                $carousel.data('page', page);
-                                $.each(response.data, function(index, product) {
-                                    var productHtml = `
-                                        <div class="product-item bg-light">
-                                            <div class="product-img position-relative overflow-hidden" style="height: 250px;">
-                                                <img class="img-fluid w-100 h-100" src="/images/products/${product.feature_image}" alt="${product.name}" style="object-fit: cover;"/>
-                                                <div class="product-action">
-                                                    ${product.stock && product.stock.quantity > 0 ? 
-                                                        `<a class="btn btn-outline-dark btn-square add-to-cart" data-product-id="${product.id}" data-offer-id="0" data-price="${product.price}">
-                                                            <i class="fa fa-shopping-cart"></i>
-                                                        </a>` :
-                                                        `<a class="btn btn-outline-dark btn-square disabled" aria-disabled="true">
-                                                            <i class="fa fa-shopping-cart"></i>
-                                                        </a>`
-                                                    }
-                                                    <a class="btn btn-outline-dark btn-square add-to-wishlist" data-product-id="${product.id}" data-offer-id="0" data-price="${product.price}">
-                                                        <i class="fa fa-heart"></i>
-                                                    </a>
-                                                </div>
+            $carousel.on('changed.owl.carousel', function(event) {
+                if (event.item.index + event.page.size >= event.item.count && !isLoading) {
+                    isLoading = true;
+                    $.ajax({
+                        url: '{{ route('getCategoryProducts') }}',
+                        method: 'GET',
+                        data: {
+                            category_id: categoryId,
+                            page: page
+                        },
+                        success: function(response) {
+                            // console.log(response);
+                            page++;
+                            $carousel.data('page', page);
+                            $.each(response.data, function(index, product) {
+                                var productHtml = `
+                                    <div class="product-item bg-light">
+                                        <div class="product-img position-relative overflow-hidden" style="height: 250px;">
+                                            <img class="img-fluid w-100 h-100" src="/images/products/${product.feature_image}" alt="${product.name}" style="object-fit: cover;"/>
+                                            <div class="product-action">
+                                                ${product.stock && product.stock.quantity > 0 ? 
+                                                    `<a class="btn btn-outline-dark btn-square add-to-cart" data-product-id="${product.id}" data-offer-id="0" data-price="${product.price}">
+                                                        <i class="fa fa-shopping-cart"></i>
+                                                    </a>` :
+                                                    `<a class="btn btn-outline-dark btn-square disabled" aria-disabled="true">
+                                                        <i class="fa fa-shopping-cart"></i>
+                                                    </a>`
+                                                }
+                                                <a class="btn btn-outline-dark btn-square add-to-wishlist" data-product-id="${product.id}" data-offer-id="0" data-price="${product.price}">
+                                                    <i class="fa fa-heart"></i>
+                                                </a>
                                             </div>
-                                            <div class="text-center py-4">
-                                                <a class="h6 text-decoration-none text-truncate" href="/product/${product.slug}">${product.name}</a>
-                                                <div class="d-flex align-items-center justify-content-center mt-2">
-                                                    <h5>${product.price}</h5>
-                                                </div>
-                                                <div class="d-flex align-items-center justify-content-center mt-2">
-                                                    ${product.stock && product.stock.quantity > 0 ? 
-                                                        `<p>Available: ${product.stock.quantity}</p>` : 
-                                                        `<p>Out of Stock</p>`
-                                                    }
-                                                </div>
+                                        </div>
+                                        <div class="text-center py-4">
+                                            <a class="h6 text-decoration-none text-truncate" href="/product/${product.slug}">${product.name}</a>
+                                            <div class="d-flex align-items-center justify-content-center mt-2">
+                                                <h5>${product.price}</h5>
                                             </div>
-                                        </div>`;
-                                    $carousel.trigger('add.owl.carousel', [$(productHtml)]).trigger('refresh.owl.carousel');
-                                });
-                                isLoading = false;
-                            },
-                            error: function(xhr, status, error) {
-                                console.error('Error fetching products:', error);
-                                isLoading = false;
-                            }
-                        });
-                    }
-                });
+                                            <div class="d-flex align-items-center justify-content-center mt-2">
+                                                ${product.stock && product.stock.quantity > 0 ? 
+                                                    `<p>Available: ${product.stock.quantity}</p>` : 
+                                                    `<p>Out of Stock</p>`
+                                                }
+                                            </div>
+                                        </div>
+                                    </div>`;
+                                $carousel.trigger('add.owl.carousel', [$(productHtml)]).trigger('refresh.owl.carousel');
+                            });
+                            isLoading = false;
+                        },
+                        error: function(xhr, status, error) {
+                            console.error('Error fetching products:', error);
+                            isLoading = false;
+                        }
+                    });
+                }
             });
         });
-    </script>
-
-    <!-- <script>
-        $(document).ready(function() {
-
-            @foreach($advertisements as $advertisement)
-                @if($advertisement->type == 'homepage_modal')
-                    $('#advertisementModal{{ $advertisement->id }}').modal('show');
-                @endif
-            @endforeach
-        });
-    </script> -->
+    });
+</script>
 
 @endsection

@@ -27,6 +27,7 @@
                                     {{ $order->user->town ?? $order->town }},
                                     {{ $order->user->postcode ?? $order->postcode }}
                                 </p>
+                                <p><strong>Note:</strong> {!! $order->note !!}</p>
                             </div>
                             <!-- Order Information -->
                             <div class="col-md-6">
@@ -69,6 +70,7 @@
                                         Unknown
                                     @endif
                                 </p>
+                                <p><strong>Order Type:</strong> {{ $order->order_type === 0 ? 'In House' : 'Out House' }}</p>
                                  @if ($order->order_type === 0)
                                 <a href="{{ route('generate-pdf', ['encoded_order_id' => base64_encode($order->id)]) }}" class="btn btn-success" target="_blank">
                                     <i class="fas fa-receipt"></i> Invoice

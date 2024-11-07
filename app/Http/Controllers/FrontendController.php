@@ -21,6 +21,7 @@ use App\Models\Ad;
 use App\Models\Supplier;
 use App\Models\Slider;
 use App\Models\CouponUsage;
+use App\Models\Brand;
 
 class FrontendController extends Controller
 {
@@ -300,27 +301,29 @@ class FrontendController extends Controller
         $query = $request->input('query');
         $products = Product::where('name', 'LIKE', "%$query%")
                             ->where('status', 1)
-                            ->orderBy('id', 'desc')
                             ->whereDoesntHave('specialOfferDetails')
                             ->whereDoesntHave('flashSellDetails')
+                            ->orderBy('id', 'desc')
                             ->take(15)
+                            ->with('stock')
                             ->get();
+    
+        $products->each(function($product) {
+    
+            $product->colors = $product->stock()
+                ->where('quantity', '>', 0)
+                ->distinct('color')
+                ->pluck('color');
+    
+            $product->sizes = $product->stock()
+                ->where('quantity', '>', 0)
+                ->distinct('size')
+                ->pluck('size');
+    
+            return $product;
+        });
 
-        if ($products->isEmpty()) {
-            return response()->json('<div class="p-2">No products found</div>');
-        }
-
-        $output = '<ul class="list-group">';
-        foreach ($products as $product) {
-            $output .= '<li class="list-group-item">
-                            <a href="'.route('product.show', $product->slug).'">
-                                '.$product->name.'
-                            </a>
-                        </li>';
-        }
-        $output .= '</ul>';
-
-        return response()->json($output);
+        return response()->json(['products' => $products]);
     }
 
     public function shop(Request $request)
@@ -328,23 +331,35 @@ class FrontendController extends Controller
          $currency = CompanyDetails::value('currency');
 
          $categories = Category::where('status', 1)
+            ->whereHas('products.stock', function($query) {
+                $query->where('quantity', '>', 0);
+            })
             ->orderBy('id', 'desc')
             ->select('id', 'name')
             ->get();
 
-        $perPage = $request->input('per_page', 10);
+        $brands = Brand::where('status', 1)
+            ->whereHas('products.stock', function($query) {
+                $query->where('quantity', '>', 0);
+            })
+            ->orderBy('id', 'desc')
+            ->select('id', 'name')
+            ->get();
+
+        $colors = Stock::where('quantity', '>', 0)
+            ->groupBy('color')
+            ->select('color')
+            ->get();
+
+        $sizes = Stock::where('quantity', '>', 0)
+            ->groupBy('size')
+            ->select('size')
+            ->get();
 
         $minPrice = Product::where('status', 1)->min('price'); 
         $maxPrice = Product::where('status', 1)->max('price');
 
-        $products = Product::where('status', 1)
-            ->orderBy('id', 'desc')
-            ->whereDoesntHave('specialOfferDetails')
-            ->whereDoesntHave('flashSellDetails')
-            ->with('stock')
-            ->select('id', 'name', 'feature_image', 'price', 'slug')
-            ->paginate($perPage);
-        return view('frontend.shop', compact('currency', 'products', 'categories', 'perPage', 'minPrice', 'maxPrice'));
+        return view('frontend.shop', compact('currency', 'categories', 'brands', 'colors', 'sizes', 'minPrice', 'maxPrice'));
     }
 
     public function contact()
@@ -444,6 +459,9 @@ class FrontendController extends Controller
         $startPrice = $request->input('start_price');
         $endPrice = $request->input('end_price');
         $categoryId = $request->input('category');
+        $brandId = $request->input('brand');
+        $size = $request->input('size');
+        $color = $request->input('color');
 
         $productsQuery = Product::select('id', 'name', 'price', 'slug', 'feature_image')
                                 ->where('status', 1)
@@ -460,7 +478,36 @@ class FrontendController extends Controller
             $productsQuery->where('category_id', $categoryId);
         }
 
-        $products = $productsQuery->get();
+        if (!empty($brandId)) {
+            $productsQuery->where('brand_id', $brandId);
+        }
+
+        if (!empty($size)) {
+            $productsQuery->whereHas('stock', function ($query) use ($size) {
+                $query->where('size', $size);
+            });
+        }
+
+        if (!empty($color)) {
+            $productsQuery->whereHas('stock', function ($query) use ($color) {
+                $query->where('color', $color);
+            });
+        }
+
+        $products = $productsQuery->get()->map(function ($product) {
+
+            $product->colors = $product->stock()
+                ->where('quantity', '>', 0)
+                ->distinct('color')
+                ->pluck('color');
+
+            $product->sizes = $product->stock()
+                ->where('quantity', '>', 0)
+                ->distinct('size')
+                ->pluck('size');  
+                 
+            return $product;
+        });
 
         return response()->json(['products' => $products]);
     }

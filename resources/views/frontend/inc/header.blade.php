@@ -1,37 +1,15 @@
-<style>
-    #search-results ul {
-        list-style-type: none;
-        padding-left: 0;
-        margin: 0;
-    }
-
-    #search-results li {
-        padding: 10px;
-        border-bottom: 1px solid #ddd;
-    }
-
-    #search-results li a {
-        text-decoration: none;
-        color: #333;
-    }
-
-    #search-results li:hover {
-        background-color: #f8f8f8;
-    }
-</style>
-
 <header class="header header-intro-clearance header-4">
     <div class="header-top">
         <div class="container">
             <div class="header-left">
-                <a href="tel:{{ $company->phone1 }}"><i class="icon-phone"></i>{{ $company->phone1 }}</a>
+                <a class="black" href="tel:{{ $company->phone1 }}"><i class="icon-phone"></i>{{ $company->phone1 }}</a>
             </div>
 
             <div class="header-right">
 
                 <ul class="top-menu">
                     <li>
-                        <a href="#">
+                        <a class="black" href="#">
                             @if(Auth::check())
                             {{ auth()->user()->name }}
                             @else
@@ -41,7 +19,7 @@
                         <ul>
                             <li>
                                 @if(Auth::check())
-                                    <a href="
+                                    <a class="black" href="
                                         @if(auth()->user()->is_type == '1')
                                             {{ route('admin.dashboard') }}
                                         @elseif(auth()->user()->is_type == '0')
@@ -52,13 +30,13 @@
                                     </a>
                                 @else
                                     <div class="header-dropdown">
-                                        <a>
+                                        <a class="black">
                                             Log In / Register
                                         </a>
                                         <div class="header-menu">
                                             <ul>
-                                                <li><a href="{{ route('login') }}">Log In</a></li>
-                                                <li><a href="{{ route('register') }}">Register</a></li>
+                                                <li><a class="black" href="{{ route('login') }}">Log In</a></li>
+                                                <li><a class="black" href="{{ route('register') }}">Register</a></li>
                                             </ul>
                                         </div>
                                     </div>
@@ -91,11 +69,10 @@
                     <form id="search-form" class="position-relative">
                         <div class="header-search-wrapper search-wrapper-wide">
                             <label for="search-input" class="sr-only">Search</label>
-                            <button class="btn btn-primary" type="button" id="search-icon"><i class="icon-search"></i></button>
-                            <input type="search" class="form-control" id="search-input" placeholder="Search product ..." required>
+                            <button class="btn btn-primary search-icon" type="button" id="search-icon"><i class="icon-search"></i></button>
+                            <input type="search" class="form-control search-input" id="search-input" placeholder="Search product ..." required>
                         </div>
                     </form>
-                    <div id="search-results" class="bg-light position-absolute w-100" style="z-index: 1000;"></div>
                 </div>
             </div>
 
@@ -107,17 +84,15 @@
                             <i class="icon-heart-o"></i>
                             <span class="wishlist-count badge wishlistCount">0</span>
                         </div>
-                        <p>Wishlist</p>
                     </a>
                 </div>
 
                 <div class="dropdown cart-dropdown">
-                    <a href="{{ route('cart.index') }}" class="dropdown-toggle cartBtn">
+                    <a href="{{ route('cart.index') }}" class="dropdown-toggle cartBtn"  title="Cart">
                         <div class="icon">
                             <i class="icon-shopping-cart"></i>
                             <span class="cart-count cartCount">0</span>
                         </div>
-                        <p>Cart</p>
                     </a>
                 </div>
             </div>
@@ -137,11 +112,11 @@
                         <ul class="menu-vertical sf-arrows">
                             @foreach($categories as $category)
                                 <li>
-                                    <a href="{{ route('category.show', $category->slug) }}">{{ $category->name }}</a>
+                                    <a class="black" href="{{ route('category.show', $category->slug) }}">{{ $category->name }}</a>
                                     @if(count($category->subcategories) > 0)
                                         <ul>
                                             @foreach($category->subcategories as $subcategory)
-                                                <li><a href="{{ route('subcategory.show', $subcategory->slug) }}">{{ $subcategory->name }}</a></li>
+                                                <li><a class="black" href="{{ route('subcategory.show', $subcategory->slug) }}">{{ $subcategory->name }}</a></li>
                                             @endforeach
                                         </ul>
                                     @endif
@@ -161,17 +136,17 @@
                     </li>
 
                     <li class="dropdown">
-                        <a class="sf-with-ul">Products</a>
+                        <a class="sf-with-ul" class="black">Products</a>
 
                         <ul>
                             @foreach($categories as $category)
                                 @if($category->products->count() > 0)
                                     <li>
-                                        <a href="{{ route('category.show', $category->slug) }}" class="sf-with-ul">{{ $category->name }}</a>
+                                        <a class="black" href="{{ route('category.show', $category->slug) }}" class="sf-with-ul">{{ $category->name }}</a>
 
                                         <ul>
                                             @foreach($category->products as $product)
-                                                <li><a href="{{ route('product.show', $product->slug) }}">{{ $product->name }}</a></li>
+                                                <li><a class="black" href="{{ route('product.show', $product->slug) }}">{{ $product->name }}</a></li>
                                             @endforeach
                                         </ul>
                                     </li>
@@ -199,3 +174,12 @@
     </div>
     
 </header>
+
+<div class="mt-3" id="searchSection">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="row search-products align-items-center py-3 px-xl-5">
+            </div>
+        </div>
+    </div>
+</div>
