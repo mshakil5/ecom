@@ -235,9 +235,7 @@ class OrderController extends Controller
         // $fixedFee = 0.20;
         // $amt = $netAmount;
 
-        // Stripe::setApiKey(env('STRIPE_SECRET'));
         Stripe::setApiKey(config('services.stripe.secret'));
-        // Stripe::setApiKey('sk_test_51N5D0QHyRsekXzKiOlfECHaMZZbQrelnyJjv2gNbL9YYEdq7LcWl4TLCZGjPStqsPrRCgAlaBTIpLUHl9F9rbtuY00ABjR2fFL');
 
         try {
             $paymentIntent = PaymentIntent::create([
