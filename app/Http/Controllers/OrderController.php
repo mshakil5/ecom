@@ -162,6 +162,7 @@ class OrderController extends Controller
                     } else {
                         $couponUsage->guest_name = $formData['name'] ?? null;
                         $couponUsage->guest_email = $formData['email'] ?? null;
+                        $couponUsage->guest_phone = $formData['phone'] ?? null;
                     }
                 
                     $couponUsage->save();
@@ -335,6 +336,7 @@ class OrderController extends Controller
                 } else {
                     $couponUsage->guest_name = $formData['name'] ?? null;
                     $couponUsage->guest_email = $formData['email'] ?? null;
+                    $couponUsage->guest_phone = $formData['phone'] ?? null;
                 }
             
                 $couponUsage->save();
@@ -524,6 +526,7 @@ class OrderController extends Controller
                 } else {
                     $couponUsage->guest_name = $formData['name'] ?? null;
                     $couponUsage->guest_email = $formData['email'] ?? null;
+                    $couponUsage->guest_phone = $formData['phone'] ?? null;
                 }
             
                 $couponUsage->save();
