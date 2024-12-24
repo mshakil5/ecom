@@ -31,6 +31,11 @@
     <!-- Favicon -->
     <link rel="icon" href="{{ asset('images/company/' . $company->fav_icon) }}">
 
+    <link rel="stylesheet" href="{{ asset('frontend/css/vendor/vendor.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('frontend/css/plugins/plugins.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('frontend/css/style.min.css') }}">
+
+    {{-- 
     <link rel="stylesheet" href="{{ asset('frontend/css/line-awesome/css/line-awesome.min.css') }}">
 
     <link rel="stylesheet" href="{{ asset('frontend/css/bootstrap.min.css') }}">
@@ -54,11 +59,11 @@
     <link rel="stylesheet" href="{{ asset('frontend/css/demo-3.css') }}">
 
     <link rel="stylesheet" href="{{ asset('frontend/css/toastr.min.css') }}">
+    --}}
  
 </head>
 
 <body>
-    <div class="page-wrapper">
         <!-- Header Start -->
         @include('frontend.inc.header')
         <!-- Header End -->
@@ -74,14 +79,18 @@
         <!-- Footer Start -->
         @include('frontend.inc.footer')
         <!-- Footer End -->
-    </div>
 
     <!-- Mobile Menu Start -->
 
-        @include('frontend.inc.mobile-menu')
+      {{--  @include('frontend.inc.mobile-menu') --}}
 
     <!-- Mobile Menu End -->
 
+    <script src="{{ asset('frontend/js/vendor.min.js') }}"></script>
+    <script src="{{ asset('frontend/js/plugins.min.js') }}"></script>
+    <script src="{{ asset('frontend/js/main.js') }}"></script>
+
+    {{-- 
     <script src="{{ asset('frontend/js/jquery.min.js') }}"></script>
 
     <script src="{{ asset('frontend/js/bootstrap.bundle.min.js') }}"></script>
@@ -122,6 +131,7 @@
     <script src="{{ asset('assets/admin/datatables/dataTables.bootstrap4.min.js')}}"></script>
 
     <script src="{{ asset('frontend/js/toastr.min.js')}}"></script>
+    --}}
 
     @yield('script')
 
