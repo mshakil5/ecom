@@ -3,7 +3,7 @@
 @section('content')
 
     <!-- Intro Slider Start-->
-    @if($section_status->slider == 1)
+    @if($section_status->slider == 1 && count($sliders) > 0)
     <div class="hero-area">
         <div class="hero-area-wrapper hero-slider-dots fix-slider-dots">
             @foreach($sliders as $slider)
@@ -16,7 +16,7 @@
                             <div class="row">
                                 <div class="col-10 col-md-8 col-xl-6">
                                     <h5>{{ $slider->sub_title }}</h5>
-                                    <h2>{{ $slider->title }}</h2>
+                                    <h2 class="text-white">{{ $slider->title }}</h2>
                                     <p>{{ $slider->description }}</p>
                                     @if($slider->link)
                                         <a href="{{ $slider->link }}" class="hero-button">Shopping Now</a>
@@ -32,6 +32,7 @@
     @endif
     <!-- Intro Slider End -->
 
+    <!-- Categories slider Start -->
     @if($section_status->categories == 1 && count($categories) > 0)
     <div class="product-catagory-section section-top-gap-100">
         <div class="section-content-gap">
@@ -65,9 +66,10 @@
         </div>
     </div>
     @endif
+    <!-- Categories slider End -->
 
     <!-- Special Offer Start -->
-    @if($section_status->special_offer == 1)
+    @if($section_status->special_offer == 1 && count($specialOffers) > 0)
     <div class="banner-section section-top-gap-100">
         <div class="banner-wrapper">
             <div class="container">
@@ -100,7 +102,7 @@
             <div class="container">
                 <div class="row">
                     <div class="section-content d-flex justify-content-between align-items-md-center align-items-start flex-md-row flex-column">
-                        <h3 class="section-title" data-aos="fade-up" data-aos-delay="0">Categories</h3>
+                        <h3 class="section-title" data-aos="fade-up" data-aos-delay="0">Products</h3>
                         <ul class="tablist nav product-tab-btn" data-aos="fade-up" data-aos-delay="400">
                             @foreach($categories as $index => $category)
                                 <li>
@@ -153,32 +155,6 @@
     @endif
     <!-- Category products slider End-->
 
-    {{-- 
-    <!-- Recent advertisements start-->
-    @if($advertisements->contains('type', 'recent'))
-     <div class="container mt-5">
-        @foreach($advertisements as $advertisement)
-            @if($advertisement->type == 'recent')
-                <div class="cta cta-border" style="background-image: url('{{ asset('images/ads/' . $advertisement->image) }}');">
-                    <div class="row justify-content-center">
-                        <div class="col-md-12">
-                            <div class="cta-content">
-                                <div class="cta-text text-right text-white">
-                                </div>
-                                <a href="{{ $advertisement->link }}" class="btn btn-primary btn-round" target="_blank">
-                                    <span>Shop Now</span><i class="icon-long-arrow-right"></i>
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            @endif
-        @endforeach
-     </div>
-    @endif
-    <!-- Recent advertisements end-->
-    --}}
-
     <!-- Recent Products Start -->
     @if($section_status->recent_products == 1 && $recentProducts->count() > 0)
     <div class="product-tab-section section-top-gap-100">
@@ -229,30 +205,6 @@
     </div>
     @endif
     <!-- Recent Products End -->
-
-    {{-- 
-    <!-- Supplier advertisements start-->
-    <div class="container">
-        @foreach($advertisements as $advertisement)
-            @if($advertisement->type == 'vendor')
-                <div class="cta cta-border" style="background-image: url('{{ asset('images/ads/' . $advertisement->image) }}');">
-                    <div class="row justify-content-center">
-                        <div class="col-md-12">
-                            <div class="cta-content">
-                                <div class="cta-text text-right text-white">
-                                </div>
-                                <a href="{{ $advertisement->link }}" class="btn btn-primary btn-round" target="_blank">
-                                    <span>Shop Now</span><i class="icon-long-arrow-right"></i>
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            @endif
-        @endforeach
-    </div>
-    <!-- Supplier advertisements end-->
-    --}}
     
     <!-- Trending Products Start -->
     @if($section_status->trending_products == 1 && $trendingProducts->count() > 0)
@@ -357,7 +309,7 @@
     <!-- Most Viewed Products End -->
 
     <!-- Flash Sell Start -->
-    @if($section_status->flash_sell == 1)
+    @if($section_status->flash_sell == 1 && count($flashSells) > 0)
     <div class="banner-section section-top-gap-100">
         <div class="banner-wrapper">
             <div class="container">
@@ -382,69 +334,6 @@
     </div>
     @endif
     <!-- Flash Sell End -->
-
-    {{-- 
-    <!-- Features Start -->
-    @if($section_status->features == 1)
-    <div class="icon-boxes-container bg-transparent">
-        <div class="container">
-            <div class="row">
-                <div class="col-sm-6 col-lg-3">
-                    <div class="icon-box icon-box-side">
-                        <span class="icon-box-icon text-dark">
-                            <i class="icon-rocket"></i>
-                        </span>
-                        <div class="icon-box-content">
-                            <h3 class="icon-box-title">Free Shipping</h3>
-                            <p>Orders $50 or more</p>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col-sm-6 col-lg-3">
-                    <div class="icon-box icon-box-side">
-                        <span class="icon-box-icon text-dark">
-                            <i class="icon-rotate-left"></i>
-                        </span>
-
-                        <div class="icon-box-content">
-                            <h3 class="icon-box-title">Free Returns</h3>
-                            <p>Within 30 days</p>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col-sm-6 col-lg-3">
-                    <div class="icon-box icon-box-side">
-                        <span class="icon-box-icon text-dark">
-                            <i class="icon-info-circle"></i>
-                        </span>
-
-                        <div class="icon-box-content">
-                            <h3 class="icon-box-title">Get 20% Off 1 Item</h3>
-                            <p>when you sign up</p>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col-sm-6 col-lg-3">
-                    <div class="icon-box icon-box-side">
-                        <span class="icon-box-icon text-dark">
-                            <i class="icon-life-ring"></i>
-                        </span>
-
-                        <div class="icon-box-content">
-                            <h3 class="icon-box-title">We Support</h3>
-                            <p>24/7 amazing services</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    @endif
-    <!-- Features End -->
-    --}}
 
     <!-- Start Modal Quickview cart -->
     <div class="modal fade" id="modalQuickview" tabindex="-1" role="dialog" aria-hidden="true">
@@ -623,74 +512,5 @@
 @endsection
 
 @section('script')
-
-<script>
-    $(document).ready(function() {
-        $('.related-carousel').each(function() {
-            var $carousel = $(this);
-            var categoryId = $carousel.data('category-id');
-            var page = $carousel.data('page');
-            var isLoading = false;
-
-            $carousel.on('changed.owl.carousel', function(event) {
-                if (event.item.index + event.page.size >= event.item.count && !isLoading) {
-                    isLoading = true;
-                    $.ajax({
-                        url: '{{ route('getCategoryProducts') }}',
-                        method: 'GET',
-                        data: {
-                            category_id: categoryId,
-                            page: page
-                        },
-                        success: function(response) {
-                            // console.log(response);
-                            page++;
-                            $carousel.data('page', page);
-                            $.each(response.data, function(index, product) {
-                                var productHtml = `
-                                    <div class="product-item bg-light">
-                                        <div class="product-img position-relative overflow-hidden" style="height: 250px;">
-                                            <img class="img-fluid w-100 h-100" src="/images/products/${product.feature_image}" alt="${product.name}" style="object-fit: cover;"/>
-                                            <div class="product-action">
-                                                ${product.stock && product.stock.quantity > 0 ? 
-                                                    `<a class="btn btn-outline-dark btn-square add-to-cart" data-product-id="${product.id}" data-offer-id="0" data-price="${product.price}">
-                                                        <i class="fa fa-shopping-cart"></i>
-                                                    </a>` :
-                                                    `<a class="btn btn-outline-dark btn-square disabled" aria-disabled="true">
-                                                        <i class="fa fa-shopping-cart"></i>
-                                                    </a>`
-                                                }
-                                                <a class="btn btn-outline-dark btn-square add-to-wishlist" data-product-id="${product.id}" data-offer-id="0" data-price="${product.price}">
-                                                    <i class="fa fa-heart"></i>
-                                                </a>
-                                            </div>
-                                        </div>
-                                        <div class="text-center py-4">
-                                            <a class="h6 text-decoration-none text-truncate" href="/product/${product.slug}">${product.name}</a>
-                                            <div class="d-flex align-items-center justify-content-center mt-2">
-                                                <h5>${product.price}</h5>
-                                            </div>
-                                            <div class="d-flex align-items-center justify-content-center mt-2">
-                                                ${product.stock && product.stock.quantity > 0 ? 
-                                                    `<p>Available: ${product.stock.quantity}</p>` : 
-                                                    `<p>Out of Stock</p>`
-                                                }
-                                            </div>
-                                        </div>
-                                    </div>`;
-                                $carousel.trigger('add.owl.carousel', [$(productHtml)]).trigger('refresh.owl.carousel');
-                            });
-                            isLoading = false;
-                        },
-                        error: function(xhr, status, error) {
-                            console.error('Error fetching products:', error);
-                            isLoading = false;
-                        }
-                    });
-                }
-            });
-        });
-    });
-</script>
 
 @endsection

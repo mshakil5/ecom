@@ -108,7 +108,7 @@ class FrontendController extends Controller
                         ->get();
 
          $sliders = Slider::orderBy('id', 'desc')
-                        ->select('title', 'sub_title', 'image')
+                        ->select('title', 'sub_title', 'image', 'link')
                         ->get();
 
         $mostViewedProducts = Product::where('status', 1)
@@ -364,7 +364,7 @@ class FrontendController extends Controller
 
     public function contact()
     {
-        $companyDetails = CompanyDetails::select('google_map', 'address1', 'email1', 'phone1')->first();
+        $companyDetails = CompanyDetails::select('google_map', 'address1', 'email1', 'phone1', 'email2', 'phone2', 'website', 'facebook', 'twitter', 'instagram', 'youtube')->first();
         return view('frontend.contact', compact('companyDetails'));
     }
 

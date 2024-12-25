@@ -7,7 +7,13 @@
                 <div class="col-lg-3 col-md-3 col-sm-5">
                     <div class="footer-widget footer-widget-contact" data-aos="fade-up"  data-aos-delay="0">
                         <div class="footer-logo">
-                            <a href="index.html"><img src="{{ asset('images/company/' . $company->company_logo) }}" alt="" class="img-fluid"></a>
+                        <a href="{{ route('frontend.homepage') }}">
+                            <img 
+                                src="{{ asset('images/company/' . $company->company_logo) }}" 
+                                alt="{{ $company->company_name }}" 
+                                class="img-fluid" 
+                                style="width: 150px; height: 50px; object-fit: contain; display: block;">
+                        </a>
                         </div>
                         <div class="footer-contact">
                             <p>{{ $company->footer_content }}</p>
@@ -26,11 +32,18 @@
                 <div class="col-lg-5 col-md-5 col-sm-7">
                     <div class="footer-widget footer-widget-subscribe" data-aos="fade-up"  data-aos-delay="200">
                         <ul class="footer-social">
-                            <li><a href="" class="facebook"><i class="fa fa-facebook"></i></a></li>
-                            <li><a href="" class="twitter"><i class="fa fa-twitter"></i></a></li>
-                            <li><a href="" class="youtube"><i class="fa fa-youtube"></i></a></li>
-                            <li><a href="" class="pinterest"><i class="fa fa-pinterest"></i></a></li>
-                            <li><a href="" class="instagram"><i class="fa fa-instagram"></i></a></li>
+                            @if($company->facebook)
+                                <li><a href="{{ $company->facebook }}" class="facebook" target="_blank"><i class="fa fa-facebook"></i></a></li>
+                            @endif
+                            @if($company->twitter)
+                                <li><a href="{{ $company->twitter }}" class="twitter" target="_blank"><i class="fa fa-twitter"></i></a></li>
+                            @endif
+                            @if($company->youtube)
+                                <li><a href="{{ $company->youtube }}" class="youtube" target="_blank"><i class="fa fa-youtube"></i></a></li>
+                            @endif
+                            @if($company->instagram)
+                                <li><a href="{{ $company->instagram }}" class="instagram" target="_blank"><i class="fa fa-instagram"></i></a></li>
+                            @endif
                         </ul>
                     </div>
                 </div>

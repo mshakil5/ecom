@@ -1,16 +1,20 @@
 <header class="header-section d-lg-block d-none">
-    <!-- Start Header Center Area -->
     <div class="header-center">
         <div class="container">
             <div class="row d-flex justify-content-between align-items-center">
                 <div class="col-3">
-                    <!-- Logo Header -->
                     <div class="header-logo">
-                        <a href="{{ route('frontend.homepage') }}"><img src="{{ asset('images/company/' . $company->company_logo) }}" alt="{{ $company->company_name }}" width="105" height="25"></a>
+                        <a href="{{ route('frontend.homepage') }}">
+                            <img 
+                            src="{{ asset('images/company/' . $company->company_logo) }}" 
+                            alt="{{ $company->company_name }}" 
+                            width="105" 
+                            height="25" 
+                            style="object-fit: contain; display: block;">
+                        </a>
                     </div>
                 </div>
                 <div class="col-6">
-                    <!-- Start Header Search -->
                     <div class="header-search">
                         <form action="#" method="post">
                             <div class="header-search-box default-search-style d-flex">
@@ -18,44 +22,40 @@
                                 <button class="default-search-style-input-btn" type="submit"><i class="icon-search"></i></button>
                             </div>
                         </form>
-                    </div> <!-- End Header Search -->
+                    </div>
                 </div>
                 <div class="col-3 text-end">
-                    <!-- Start Header Action Icon -->
                     <ul class="header-action-icon">
                         <li>
-                            <a href="#offcanvas-wishlish" class="offcanvas-toggle">
+                            <a href="{{ route('wishlist.index') }}" class="offcanvas-toggle wishlistBtn">
                                 <i class="icon-heart"></i>
-                                <span class="header-action-icon-item-count">3</span>
+                                <span class="header-action-icon-item-count wishlistCount">0</span>
                             </a>
                         </li>
                         <li>
-                            <a href="#offcanvas-add-cart" class="offcanvas-toggle">
+                            <a href="{{ route('cart.index') }}" class="offcanvas-toggle cartBtn">
                                 <i class="icon-shopping-cart"></i>
-                                <span class="header-action-icon-item-count">3</span>
+                                <span class="header-action-icon-item-count cartCount">0</span>
                             </a>
                         </li>
-                    </ul> <!-- End Header Action Icon -->
+                    </ul>
                 </div>
             </div>
         </div>
-    </div> <!-- End Header Center Area -->
+    </div>
 
-    <!-- Start Bottom Area -->
     <div class="header-bottom sticky-header">
         <div class="container">
             <div class="row">
                 <div class="col-12">
-                    <!-- Header Main Menu -->
                     <div class="main-menu">
                         <nav>
                             <ul>
                                 <li class="has-dropdown">
-                                    <a class="active main-menu-link" href="{{ route('frontend.homepage') }}">Home</a>
+                                    <a class="main-menu-link {{ request()->routeIs('frontend.homepage') ? 'active' : '' }}" href="{{ route('frontend.homepage') }}">Home</a>
                                 </li>
                                 <li class="has-dropdown">
-                                    <a href="#">Categories <i class="fa fa-angle-down"></i></a>
-                                    <!-- Sub Menu -->
+                                    <a href="">Categories <i class="fa fa-angle-down"></i></a>
                                     <ul class="sub-menu">
                                         @foreach($categories as $category)
                                             @if($category->products->count() > 0)
@@ -67,16 +67,16 @@
                                     </ul>
                                 </li>
                                 <li>
-                                    <a href="{{ route('frontend.shopdetail') }}">About Us</a>
+                                    <a href="{{ route('frontend.shopdetail') }}" class="{{ request()->routeIs('frontend.shopdetail') ? 'active' : '' }}">About Us</a>
                                 </li>
                                 <li>
-                                    <a href="{{ route('frontend.contact') }}">Contact Us</a>
+                                    <a href="{{ route('frontend.contact') }}" class="{{ request()->routeIs('frontend.contact') ? 'active' : '' }}">Contact Us</a>
                                 </li>
                             </ul>
                         </nav>
-                    </div> <!-- Header Main Menu Start -->
+                    </div>
                 </div>
             </div>
         </div>
-    </div> <!-- End Bottom Area -->
+    </div>
 </header>
