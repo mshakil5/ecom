@@ -55,6 +55,7 @@
                                 <li><a href="{{ route('frontend.homepage') }}">Home</a></li>
                                 <li><a href="{{ route('frontend.shop') }}">Shop</a></li>
                                 <li><a href="{{ route('frontend.shopdetail') }}">About Us</a></li>
+                                <li><a href="{{ route('frontend.contact') }}">Contact Us</a></li>
                             </ul>
                             <ul class="footer-menu-nav">
                                 <li><a href="{{ route('cart.index') }}">Cart</a></li>

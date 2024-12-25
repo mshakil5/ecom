@@ -2,68 +2,60 @@
 @section('title', $title)
 @section('content')
 
-<div class="container for-you">
-    <h2 class="title text-center mb-5 mt-4">Explore Products in {{ $sub_category->name }}</h2>
-    <div class="products">
-        <div class="row justify-content-center">
-            @foreach($products as $product)
-                <div class="col-6 col-md-4 col-lg-3">
-                    <div class="product product-2">
-                        <figure class="product-media">
-                            <a href="{{ route('product.show', $product->slug) }}">
-                                <x-image-with-loader src="{{ asset('/images/products/' . $product->feature_image) }}" alt="{{ $product->name }}" class="product-image" />
-                            </a>
-
-                            @if ($product->stock && $product->stock->quantity > 0)
-
-                            @php
-                            $colors = $product->stock()
-                                ->where('quantity', '>', 0)
-                                ->distinct('color')
-                                ->pluck('color');
-
-                            $sizes = $product->stock()
-                                ->where('quantity', '>', 0)
-                                ->distinct('size')
-                                ->pluck('size');
-                            @endphp
-
-                                <div class="product-action-vertical">
-                                    <a href="#" class="btn-product-icon btn-wishlist add-to-wishlist btn-expandable" title="Add to wishlist" data-product-id="{{ $product->id }}" data-offer-id="0" data-price="{{ $product->price }}"> <span>Add to wishlist</span> </a>
-                                </div>
-
-                                <div class="product-action">
-                                    <a href="#" class="btn-product btn-cart" title="Add to cart"
-                                    data-product-id="{{ $product->id }}" 
-                                    data-offer-id="0" 
-                                    data-price="{{ $product->price }}" 
-                                    data-toggle="modal" data-target="#quickAddToCartModal" 
-                                    data-image ="{{ asset('images/products/' . $product->feature_image) }}" data-stock="{{ $product->stock->quantity }}"
-                                    data-colors="{{ $colors->toJson() }}"
-                                    data-sizes="{{ $sizes->toJson() }}">
-                                        <span>add to cart</span>
-                                    </a>
-                                </div>
-                            @else
-                                <span class="product-label label-out-stock">Out of stock</span>
-                            @endif
-                        </figure>
-
-                        <div class="product-body">
-                            <h3 class="product-title"><a href="{{ route('product.show', $product->slug) }}">{{ $product->name }}</a></h3>
-                            <div class="product-price">
-                                {{ $currency }} {{ number_format($product->price, 2) }}
-                            </div>
-                        </div>
+<div class="breadcrumb-section">
+    <div class="breadcrumb-wrapper">
+        <div class="container">
+            <div class="row">
+                <div class="col-12 d-flex justify-content-between justify-content-md-between  align-items-center flex-md-row flex-column">
+                    <h3 class="breadcrumb-title">{{ $sub_category->name }}</h3>
+                    <div class="breadcrumb-nav">
+                        <nav aria-label="breadcrumb">
+                            <ul>
+                                <li><a href="{{ route('frontend.homepage') }}">Home</a></li>
+                                <li class="active" aria-current="page">{{ $sub_category->name }}</li>
+                            </ul>
+                        </nav>
                     </div>
                 </div>
-            @endforeach
+            </div>
         </div>
     </div>
+</div>
 
-    <div class="col-12">
-        <div class="pagination-wrapper d-flex justify-content-center">
-            {{ $products->links('pagination::bootstrap-4') }}
+<div class="product-tab-section">
+    <div class="product-tab-wrapper" data-aos="fade-up" data-aos-delay="50">
+        <div class="container">
+            <div class="row">
+                <div class="col-12">
+                    <div class="product-default-slider product-default-slider-4grids-1row">
+                        @if ($products->count() > 0)
+                            @foreach($products as $product)
+                                <div class="product-default-single border-around">
+                                    <div class="product-img-warp">
+                                        <a href="{{ route('product.show', $product->slug) }}" class="product-default-img-link">
+                                            <img src="{{ asset('images/products/' . $product->feature_image) }}" alt="{{ $product->name }}" class="product-default-img img-fluid" style="height: 200px; object-fit: cover;">
+                                        </a>
+                                        <div class="product-action-icon-link">
+                                            <ul>
+                                                <li><a href="#"><i class="icon-heart"></i></a></li>
+                                                <li><a href="#" data-bs-toggle="modal" data-bs-target="#modalQuickview"><i class="icon-eye"></i></a></li>
+                                                <li><a href="#" data-bs-toggle="modal" data-bs-target="#modalAddcart"><i class="icon-shopping-cart"></i></a></li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                    <div class="product-default-content">
+                                        <h6 class="product-default-link"><a href="{{ route('product.show', $product->slug) }}">{{ $product->name }}</a></h6>
+                                        <span class="product-default-price">
+                                            <del class="product-default-price-off">{{ $currency }}{{ number_format($product->price + 5, 2) }}</del> 
+                                            {{ $currency }}{{ number_format($product->price, 2) }}
+                                        </span>
+                                    </div>
+                                </div>
+                            @endforeach
+                        @endif
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </div>

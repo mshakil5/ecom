@@ -68,6 +68,7 @@
     @endif
     <!-- Categories slider End -->
 
+    {{-- 
     <!-- Special Offer Start -->
     @if($section_status->special_offer == 1 && count($specialOffers) > 0)
     <div class="banner-section section-top-gap-100">
@@ -94,6 +95,7 @@
     </div>
     @endif
     <!-- Special Offer End -->
+    --}}
 
     <!-- Category products slider Start-->
     @if ($section_status->category_products == 1 && count($categories) > 0)
@@ -308,6 +310,7 @@
     @endif
     <!-- Most Viewed Products End -->
 
+    {{--
     <!-- Flash Sell Start -->
     @if($section_status->flash_sell == 1 && count($flashSells) > 0)
     <div class="banner-section section-top-gap-100">
@@ -334,6 +337,7 @@
     </div>
     @endif
     <!-- Flash Sell End -->
+    --}}
 
     <!-- Start Modal Quickview cart -->
     <div class="modal fade" id="modalQuickview" tabindex="-1" role="dialog" aria-hidden="true">
