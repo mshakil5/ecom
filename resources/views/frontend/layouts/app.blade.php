@@ -69,9 +69,7 @@
         <!-- Header End -->
 
         <!-- Main Content Start -->
-        <main class="main">
             @yield('content')
-        </main>
         <!-- Main Content End -->
 
         @include('frontend.modals.add_to_cart_modal')
