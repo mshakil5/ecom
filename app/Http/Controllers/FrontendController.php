@@ -123,7 +123,7 @@ class FrontendController extends Controller
 
         $categories = Category::where('status', 1)
             ->with(['products' => function ($query) {
-                $query->select('id', 'category_id', 'name', 'price', 'slug', 'feature_image', 'watch')
+                $query->select('id', 'category_id', 'name', 'price', 'slug', 'feature_image', 'watch', 'short_description')
                     ->orderBy('watch', 'desc');
             }])
             ->select('id', 'name', 'image', 'slug')

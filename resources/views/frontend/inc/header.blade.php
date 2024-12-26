@@ -55,6 +55,9 @@
                                     <a class="main-menu-link {{ request()->routeIs('frontend.homepage') ? 'active' : '' }}" href="{{ route('frontend.homepage') }}">Home</a>
                                 </li>
                                 <li class="has-dropdown">
+                                    <a class="main-menu-link {{ request()->routeIs('frontend.shop') ? 'active' : '' }}" href="{{ route('frontend.shop') }}">Shop</a>
+                                </li>
+                                <li class="has-dropdown">
                                     <a href="">Categories <i class="fa fa-angle-down"></i></a>
                                     <ul class="sub-menu">
                                         @foreach($categories as $category)

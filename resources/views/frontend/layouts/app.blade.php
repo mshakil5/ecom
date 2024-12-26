@@ -34,6 +34,13 @@
     <link rel="stylesheet" href="{{ asset('frontend/css/vendor/vendor.min.css') }}">
     <link rel="stylesheet" href="{{ asset('frontend/css/plugins/plugins.min.css') }}">
     <link rel="stylesheet" href="{{ asset('frontend/css/style.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('frontend/css/toastr.min.css') }}">
+
+    <style>
+        .toast {
+            font-size: 15px !important;
+        }
+    </style>
 
     {{-- 
     <link rel="stylesheet" href="{{ asset('frontend/css/line-awesome/css/line-awesome.min.css') }}">
@@ -58,7 +65,6 @@
 
     <link rel="stylesheet" href="{{ asset('frontend/css/demo-3.css') }}">
 
-    <link rel="stylesheet" href="{{ asset('frontend/css/toastr.min.css') }}">
     --}}
  
 </head>
@@ -73,6 +79,7 @@
         <!-- Main Content End -->
 
         @include('frontend.modals.add_to_cart_modal')
+        @include('frontend.modals.quick_view')
 
         <!-- Footer Start -->
         @include('frontend.inc.footer')
@@ -87,6 +94,27 @@
     <script src="{{ asset('frontend/js/vendor.min.js') }}"></script>
     <script src="{{ asset('frontend/js/plugins.min.js') }}"></script>
     <script src="{{ asset('frontend/js/main.js') }}"></script>
+    <script src="{{ asset('frontend_old/js/toastr.min.js')}}"></script>
+
+    <script>
+        toastr.options = {
+            "closeButton": false,
+            "debug": false,
+            "newestOnTop": false,
+            "progressBar": false,
+            "positionClass": "toast-top-center",
+            "preventDuplicates": false,
+            "onclick": null,
+            "showDuration": "300",
+            "hideDuration": "1000",
+            "timeOut": "5000",
+            "extendedTimeOut": "1000",
+            "showEasing": "swing",
+            "hideEasing": "linear",
+            "showMethod": "fadeIn",
+            "hideMethod": "fadeOut"
+        };
+    </script>
 
     {{-- 
     <script src="{{ asset('frontend/js/jquery.min.js') }}"></script>
@@ -128,7 +156,6 @@
 
     <script src="{{ asset('assets/admin/datatables/dataTables.bootstrap4.min.js')}}"></script>
 
-    <script src="{{ asset('frontend/js/toastr.min.js')}}"></script>
     --}}
 
     @yield('script')
@@ -137,6 +164,7 @@
     @include('frontend.partials.add_to_cart_script')
     @include('frontend.partials.search_script')
     @include('frontend.modals.add_to_cart_modal_script')
+    @include('frontend.modals.quick_view_script')
 
     @if(session('session_clear'))
         <script>
