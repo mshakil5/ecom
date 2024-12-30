@@ -83,22 +83,6 @@ class FrontendController extends Controller
             ->take(12)
             ->get();
 
-        $initialCategoryProducts = Category::where('status', 1)
-            ->with(['products' => function($query) {
-                $query->select('id', 'name', 'feature_image', 'price', 'slug', 'category_id')
-                    ->where('status', 1)
-                    ->whereDoesntHave('specialOfferDetails')
-                    ->whereDoesntHave('flashSellDetails')
-                    ->orderBy('id', 'desc');
-            }])
-            ->select('id', 'name')
-            ->get();
-
-        $initialCategoryProducts->transform(function ($category) {
-            $category->setRelation('products', $category->products->take(6));
-            return $category;
-        });
-
         $section_status = SectionStatus::first();
         
         $advertisements = Ad::where('status', 1)->select('type', 'link', 'image')->get();
@@ -133,7 +117,7 @@ class FrontendController extends Controller
                 $category->setRelation('products', $category->products->take(6));
             });
 
-        return view('frontend.index', compact('specialOffers','flashSells','featuredProducts', 'trendingProducts', 'currency', 'recentProducts', 'popularProducts', 'initialCategoryProducts', 'section_status', 'advertisements', 'suppliers', 'sliders', 'categories', 'mostViewedProducts'));
+        return view('frontend.index', compact('specialOffers','flashSells','featuredProducts', 'trendingProducts', 'currency', 'recentProducts', 'popularProducts', 'section_status', 'advertisements', 'suppliers', 'sliders', 'categories', 'mostViewedProducts'));
     }
 
     public function getCategoryProducts(Request $request)

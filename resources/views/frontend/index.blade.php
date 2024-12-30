@@ -169,7 +169,6 @@
                                                                 data-stock="{{ $product->stock->quantity }}"
                                                                 data-colors="{{ $colors->toJson() }}"
                                                                 data-sizes="{{ $sizes->toJson() }}" 
-                                                                data-images="{{ $images->toJson() }}"
                                                                 ><i class="icon-eye"></i>
                                                                 </a>
                                                             </li>
